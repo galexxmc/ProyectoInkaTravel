@@ -1,0 +1,35 @@
+<div class="catalogo-container">
+    <h1>Descubre tu Próxima Aventura</h1>
+    <p>Explora nuestro catálogo de destinos inolvidables en el Perú.</p>
+
+    <div *ngIf="isLoading" class="loading">
+        Cargando paquetes... 🌎
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-error">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage" class="paquetes-grid">
+
+        <div *ngFor="let paquete of paquetes" class="paquete-card">
+            
+            <div class="paquete-info">
+                <h3>{{ paquete.nombre }}</h3>
+                <p class="region">{{ paquete.region }} - {{ paquete.categoria }}</p>
+                <p class="descripcion">{{ paquete.descripcion | slice:0:100 }}...</p> </div>
+            
+            <div class="paquete-footer">
+                <span class="precio">S/ {{ paquete.precio }}</span>
+                <a [routerLink]="['/paquetes', paquete.id]" class="btn-detalle">
+                    Ver Detalle
+                </a>
+            </div>
+
+        </div>
+
+        <div *ngIf="paquetes.length === 0" class="no-paquetes">
+            <p>No se encontraron paquetes que coincidan con tu búsqueda.</p>
+        </div>
+    </div>
+</div>

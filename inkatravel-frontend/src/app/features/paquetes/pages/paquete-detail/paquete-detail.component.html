@@ -1,0 +1,59 @@
+<div class="detalle-container">
+  <div *ngIf="isLoading" class="loading">Cargando detalle... 🌎</div>
+
+  <div *ngIf="errorMessage" class="alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="detalle && !isLoading" class="detalle-content">
+    <div class="detalle-header">
+      <h1>{{ detalle.paquete.nombre }}</h1>
+      <span class="region"
+        >{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span
+      >
+    </div>
+
+    <div class="detalle-body">
+      <div class="col-info">
+        <h2>Descripción</h2>
+        <p>{{ detalle.paquete.descripcion }}</p>
+
+        <h2>Itinerario</h2>
+        <p>{{ detalle.paquete.itinerario }}</p>
+      </div>
+
+      <div class="col-accion">
+        <div
+          *ngIf="detalle.clima && detalle.clima.current_weather"
+          class="clima-widget"
+        >
+          <h3>Clima Actual</h3>
+          <p class="temperatura">
+            {{ detalle.clima.current_weather.temperature }} °C
+          </p>
+          <p class="condicion">
+            <span *ngIf="detalle.clima.current_weather.weathercode === 0"
+              >☀️ Despejado</span
+            >
+            <span *ngIf="detalle.clima.current_weather.weathercode > 0"
+              >☁️ Nublado/Lluvia</span
+            >
+          </p>
+        </div>
+
+        <div class="compra-box">
+          <span class="precio">S/ {{ detalle.paquete.precio }}</span>
+          <p>por persona</p>
+          <button
+            (click)="reservarAhora(detalle.paquete.id)"
+            class="btn-primary"
+          >
+            Reservar Ahora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <a routerLink="/paquetes" class="btn-volver">← Volver al Catálogo</a>
+  </div>
+</div>

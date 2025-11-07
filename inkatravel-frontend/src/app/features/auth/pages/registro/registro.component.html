@@ -1,0 +1,44 @@
+<div class="registro-container">
+    <div class="registro-card">
+        <h2>Crear Cuenta InkaTravel</h2>
+        <p>Accede a beneficios exclusivos y a nuestro programa de fidelización.</p>
+
+        <form autocomplete="off" [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+
+            <div class="form-group">
+                <label for="nombre">Nombre Completo</label>
+                <input id="nombre" type="text" formControlName="nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo Electrónico</label>
+                <input id="correo" type="email" formControlName="correo" placeholder="ejemplo@correo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono (9 dígitos)</label>
+                <input id="telefono" type="tel" formControlName="telefono" placeholder="9xxxxxxxx" autocomplete="off" required>
+            </div>
+            <div *ngIf="registroForm.get('telefono')?.invalid && registroForm.get('telefono')?.touched" class="alert-validation">
+                <span *ngIf="registroForm.get('telefono')?.errors?.['pattern']">El teléfono debe tener 9 dígitos.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="contrasena">Contraseña</label>
+                <input id="contrasena" type="password" formControlName="contrasena" placeholder="Mínimo 6 caracteres" autocomplete="off" required>
+            </div>
+            
+            <div *ngIf="errorMessage" class="alert-error">
+                {{ errorMessage }}
+            </div>
+
+            <button type="submit" [disabled]="registroForm.invalid" class="btn-primary">
+                Registrarme
+            </button>
+        </form>
+
+        <p class="login-link">
+            ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+        </p>
+    </div>
+</div>

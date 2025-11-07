@@ -1,0 +1,24 @@
+<header class="app-header">
+    <nav>
+        <div class="logo">
+            <a routerLink="/home">InkaTravel 🇵🇪</a>
+        </div>
+        <div class="nav-links">
+            <a routerLink="/paquetes">Catálogo</a>
+            <a routerLink="/mis-reservas">Mis Reservas</a>
+            <a routerLink="/perfil">Mi Perfil</a>
+        </div>
+        <div class="auth-controls">
+            <a routerLink="/login" class="btn-login">Iniciar Sesión</a>
+            <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </nav>
+</header>
+
+<main class="app-main">
+    <router-outlet></router-outlet>
+</main>
+
+<footer class="app-footer">
+    <p>&copy; 2025 InkaTravel - Todos los derechos reservados.</p>
+</footer>
