@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class JwtService {
     // Esta es la "firma" secreta de tu aplicación. ¡Debe ser larga y segura!
     // Generé una para ti (es "InkaTravelSuperSecretKeyForJWTGeneration2025" en Base64).
     // NUNCA expongas esta clave públicamente.
-    private static final String SECRET_KEY = "SW5rYVRyYXZlbFN1cGVyU2VjcmV0S2V5Rm9ySldUR2VuZXJhdGlvbjIwMjU=";
+    @Value("${jwt.secret.key}") // Lee la clave desde application.properties
+    private String SECRET_KEY;
 
     // --- 2. TIEMPO DE EXPIRACIÓN (en milisegundos) ---
     // Vamos a hacer que los tokens duren 24 horas.
