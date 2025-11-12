@@ -1,0 +1,37 @@
+<div class="admin-layout flex min-h-screen bg-gray-100">
+
+    <aside class="w-64 bg-gray-800 text-white flex flex-col">
+
+        <div class="p-6 text-center border-b border-gray-700">
+            <h2 class="text-2xl font-bold">InkaTravel</h2>
+            <span class="text-sm text-gray-400">Panel Admin</span>
+        </div>
+
+        <nav class="flex-grow p-4 space-y-2">
+            <a routerLink="/admin/dashboard" 
+               class="block px-4 py-2 rounded-md hover:bg-gray-700">
+               Dashboard
+            </a>
+            <a routerLink="/admin/usuarios" 
+               class="block px-4 py-2 rounded-md hover:bg-gray-700">
+               Gestión de Usuarios
+            </a>
+            <a routerLink="/admin/reservas" 
+               class="block px-4 py-2 rounded-md hover:bg-gray-700">
+               Gestión de Reservas
+            </a>
+
+            <hr class="my-4 border-gray-700">
+
+            <a routerLink="/home" 
+               class="block px-4 py-2 rounded-md text-yellow-400 hover:bg-gray-700">
+               Volver a la Tienda
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow p-8">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

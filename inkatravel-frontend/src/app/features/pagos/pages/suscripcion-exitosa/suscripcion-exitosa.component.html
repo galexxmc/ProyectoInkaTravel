@@ -1,24 +1,35 @@
-<div class="pago-exitoso-container">
-    <div class="pago-exitoso-card">
+<div class="flex flex-col flex-grow items-center justify-center">
 
-        <div *ngIf="isLoading">
-            <h2>Verificando tu suscripción...</h2>
-            <p>Por favor, espera...</p>
-        </div>
+    <div class="pago-exitoso-card bg-white p-8 rounded-lg shadow-xl w-full max-w-lg text-center">
+        
+        <div *ngIf="isLoading" class="p-8">
+            <h2 class="text-2xl font-semibold text-gray-700">Verificando tu suscripción...</h2>
+            <p class="text-gray-500 mt-2">Por favor, espera un momento...</p>
+            </div>
 
-        <div *ngIf="errorMessage" class="alert-error">
+        <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
             {{ errorMessage }}
         </div>
 
         <div *ngIf="!isLoading && !errorMessage">
-            <div class="icono-exito">
-                <span>🌟</span>
+            
+            <div class="icono-exito mx-auto mb-4">
+                <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
+                    <span class="text-5xl">🌟</span>
+                </div>
             </div>
-            <h2>¡Bienvenido a InkaTravel Premium!</h2>
-            <p>Tu suscripción ha sido activada (RF-06).</p>
-            <p>Tu `localStorage` ha sido actualizado.</p>
-
-            <button (click)="irAlPerfil()" class="btn-primary">Ir a Mi Perfil</button>
+            
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">¡Bienvenido a InkaTravel Premium!</h2>
+            
+            <p class="text-gray-600 text-lg mb-6">
+                Tu suscripción ha sido activada
+            </p>
+            
+            <button (click)="irAlPerfil()" 
+                    class="inline-block bg-blue-600 text-white py-3 px-8 rounded-md font-semibold text-lg
+                           hover:bg-blue-700 transition duration-300">
+                Ir a Mi Perfil
+            </button>
         </div>
 
     </div>

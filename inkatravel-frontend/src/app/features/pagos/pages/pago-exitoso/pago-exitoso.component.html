@@ -1,13 +1,27 @@
-<div class="pago-exitoso-container">
-    <div class="pago-exitoso-card">
-        <div class="icono-exito">
-            <span>✅</span>
-        </div>
-        <h2>¡Pago Aprobado!</h2>
-        <p>Tu reserva ha sido confirmada exitosamente.</p>
-        <p>Hemos enviado un correo de confirmación a tu email.</p>
-        <p>Tu base de datos y tus puntos han sido actualizados por el Webhook.</p>
+<div class="flex flex-col flex-grow items-center justify-center">
 
-        <a href="http://localhost:4200/mis-reservas" class="btn-primary">Ir a Mis Reservas ahora</a>
+    <div class="pago-exitoso-card bg-white p-8 rounded-lg shadow-xl w-full max-w-lg text-center">
+        
+        <div class="icono-exito mx-auto mb-4">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <span class="text-5xl">✅</span>
+            </div>
+        </div>
+        
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">¡Pago Aprobado!</h2>
+        
+        <p class="text-gray-600 text-lg mb-2">Tu reserva ha sido confirmada exitosamente.</p>
+        
+        <div class="text-gray-600 space-y-1 mb-6">
+            <p>* Hemos enviado un correo de confirmación a tu email</p>
+            <p>* Puedes revisar tu reserva en la sección "Mis reservas"</p>
+            <p>* Puedes revisar tus puntos en la sección "Mis Puntos"</p>
+        </div>
+        
+        <a href="http://localhost:4200/mis-reservas" 
+           class="inline-block bg-blue-600 text-white py-3 px-8 rounded-md font-semibold text-lg
+                  hover:bg-blue-700 transition duration-300">
+            Ir a Mis Reservas ahora
+        </a>
     </div>
-</div>  
+</div>

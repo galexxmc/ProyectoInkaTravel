@@ -1,25 +1,71 @@
-<header class="app-header">
-    <nav>
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        
         <div class="logo">
-            <a routerLink="/home">InkaTravel 🇵🇪</a>
+            <a routerLink="/home" class="text-2xl font-bold text-blue-700 hover:text-blue-800">
+                InkaTravel 🇵🇪
+            </a>
         </div>
-        <div class="nav-links">
-            <a routerLink="/paquetes">Catálogo</a>
-            <a routerLink="/mis-reservas">Mis Reservas</a>
-            <a routerLink="/mis-puntos">Mis Puntos</a>
-            <a routerLink="/perfil">Mi Perfil</a>
+        
+        <div class="nav-links hidden md:flex space-x-6"> 
+            <a routerLink="/paquetes" class="text-gray-600 hover:text-blue-600 font-medium">Catálogo</a>
+            <a routerLink="/mis-reservas" class="text-gray-600 hover:text-blue-600 font-medium">Mis Reservas</a>
+            <a routerLink="/mis-puntos" class="text-gray-600 hover:text-blue-600 font-medium">Mis Puntos</a>
+            <a routerLink="/perfil" class="text-gray-600 hover:text-blue-600 font-medium">Mi Perfil</a>
+            <a *ngIf="isAdmin" routerLink="/admin" 
+               class="text-yellow-500 font-bold hover:text-yellow-600">
+               Panel Admin
+            </a>
         </div>
-        <div class="auth-controls">
-            <a routerLink="/login" class="btn-login">Iniciar Sesión</a>
-            <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        
+        <div class="auth-controls hidden md:flex items-center space-x-3">
+            <a *ngIf="!estaLogueado()" routerLink="/login" 
+               class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300">
+               Iniciar Sesión
+            </a>
+            <button *ngIf="estaLogueado()" (click)="logout()" 
+                    class="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600">
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <div class="md:hidden">
+            <button (click)="toggleMobileMenu()" class="text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
         </div>
     </nav>
+
+    <div class="md:hidden" [class.hidden]="!isMobileMenuOpen">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a routerLink="/paquetes" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Catálogo</a>
+            <a routerLink="/mis-reservas" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Mis Reservas</a>
+            <a routerLink="/mis-puntos" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Mis Puntos</a>
+            <a routerLink="/perfil" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+
+            <a *ngIf="isAdmin" routerLink="/admin" 
+               class="block px-3 py-2 rounded-md text-base font-bold text-yellow-500 hover:bg-gray-100">
+               Panel Admin
+            </a>
+            
+            <hr class="my-2 border-gray-200">
+
+            <a *ngIf="!estaLogueado()" routerLink="/login" class="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-gray-100">
+                Iniciar Sesión
+            </a>
+            <button *ngIf="estaLogueado()" (click)="logout()" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-gray-100">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
 </header>
 
-<main class="app-main">
+<main class="app-main container mx-auto p-6 flex-grow">
     <router-outlet></router-outlet>
 </main>
 
-<footer class="app-footer">
+<footer class="bg-gray-800 text-gray-300 text-center p-6">
     <p>&copy; 2025 InkaTravel - Todos los derechos reservados.</p>
 </footer>

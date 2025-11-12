@@ -1,0 +1,7 @@
+:host {
+  /* Le dice al componente que sea un contenedor flex-column */
+  @apply flex flex-col;
+
+  /* Le dice que ocupe, como mínimo, el 100% de la altura de la pantalla */
+  @apply min-h-screen;
+}

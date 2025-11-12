@@ -8,4 +8,5 @@ export interface UsuarioResponseDTO {
     tipo: 'GRATIS' | 'PREMIUM' | 'ADMIN';
     puntosAcumulados: number;
     suscripcionActiva: boolean;
+    activo: boolean;
 }

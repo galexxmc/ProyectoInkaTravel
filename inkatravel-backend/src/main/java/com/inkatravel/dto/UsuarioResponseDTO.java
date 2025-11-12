@@ -17,6 +17,7 @@ public class UsuarioResponseDTO {
     private TipoUsuario tipo;
     private int puntosAcumulados;
     private boolean suscripcionActiva;
+    private boolean activo;
 
     public UsuarioResponseDTO(Usuario usuario) {
         this.id = usuario.getId();
@@ -25,5 +26,6 @@ public class UsuarioResponseDTO {
         this.tipo = usuario.getTipo();
         this.puntosAcumulados = usuario.getPuntosAcumulados();
         this.suscripcionActiva = usuario.isSuscripcionActiva();
+        this.activo = usuario.isActivo();
     }
 }

@@ -1,0 +1,97 @@
+<div *ngIf="isConfirmingPayment" 
+     class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/75 backdrop-blur-sm">
+    
+    <div class="flex flex-col items-center p-8 rounded-lg">
+        
+        <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
+             class="loading-sol-inca w-18 h-18 mb-4">
+        
+        <p class="text-white text-2xl font-semibold">Procesando solicitud...</p>
+    </div>
+</div>
+
+<div class="gestion-container">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Reservas</h1>
+
+    <div *ngIf="isLoading" class="text-center p-12 bg-white rounded-lg shadow-md">
+        <p class="text-lg text-gray-500">Cargando reservas...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage" 
+         class="bg-white shadow-md rounded-lg overflow-x-auto">
+        
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Reserva</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paquete</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acción</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                
+                <tr *ngIf="reservas.length === 0">
+                    <td colspan="7" class="text-center p-6 text-gray-500">
+                        No se encontraron reservas.
+                    </td>
+                </tr>
+
+                <tr *ngFor="let r of reservas" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">#{{ r.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.usuarioNombre }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ r.paqueteNombre }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ r.fechaReserva | date:'dd/MM/yyyy' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">S/ {{ r.total }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold" 
+                              [ngClass]="{
+                                'bg-green-100 text-green-800': r.estado === 'CONFIRMADA',
+                                'bg-yellow-100 text-yellow-800': r.estado === 'PENDIENTE',
+                                'bg-red-100 text-red-800': r.estado === 'CANCELADA'
+                              }">
+                            {{ r.estado }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button *ngIf="r.estado === 'PENDIENTE'" 
+                                (click)="abrirModalConfirmacion(r.id)"
+                                class="bg-green-500 text-white px-3 py-1 rounded-md text-xs
+                                       hover:bg-green-600 transition duration-300">
+                            Confirmar Pago
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<app-modal-confirmacion 
+    [visible]="showConfirmModal"
+    [titulo]="modalConfirmTitulo"
+    [mensaje]="modalConfirmMensaje"
+    confirmButtonText="Confirmar"
+    confirmButtonColor="red"
+    [showCancelButton]="true"
+    (onConfirm)="ejecutarConfirmacion()"
+    (onCancel)="cerrarModalConfirmacion()">
+</app-modal-confirmacion>
+
+<app-modal-confirmacion 
+    [visible]="showInfoModal"
+    [titulo]="modalInfoTitulo"
+    [mensaje]="modalInfoMensaje"
+    confirmButtonText="Aceptar"
+    confirmButtonColor="blue"
+    [showCancelButton]="false" 
+    (onConfirm)="cerrarModalInfo()"
+    (onCancel)="cerrarModalInfo()">
+</app-modal-confirmacion>

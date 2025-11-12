@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { UsuarioService } from '../../../usuario/services/usuario.service'; // Importa el servicio de usuario
 
 @Component({
   selector: 'app-suscripcion-exitosa',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ],
   templateUrl: './suscripcion-exitosa.component.html',
   styleUrls: ['./suscripcion-exitosa.component.scss']
 })

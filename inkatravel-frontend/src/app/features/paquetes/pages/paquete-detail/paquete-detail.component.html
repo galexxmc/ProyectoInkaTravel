@@ -1,88 +1,100 @@
-<div class="detalle-container">
+<div class="detalle-container max-w-6xl mx-auto">
 
-    <div *ngIf="isLoading" class="loading">
-        Cargando detalle... 🌎
+    <div *ngIf="isLoading" class="text-center p-12 bg-">
+        <p class="text-lg text-gray-500">Cargando detalle... 🌎</p>
     </div>
 
-    <div *ngIf="errorMessage" class="alert-error">
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
         {{ errorMessage }}
     </div>
 
-    <div *ngIf="detalle && !isLoading" class="detalle-content">
+    <div *ngIf="detalle && !isLoading" class="detalle-content bg-white shadow-lg rounded-lg overflow-hidden">
         
-        <div class="detalle-header">
-            <h1>{{ detalle.paquete.nombre }}</h1>
-            <span class="region">{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span>
+        <div class="h-64 bg-gray-200 flex items-center justify-center text-gray-400">
+            (Imagen principal del paquete)
         </div>
 
-        <div class="detalle-body">
+        <div class="detalle-header p-6 border-b border-gray-200">
+            <h1 class="text-4xl font-bold text-gray-900">{{ detalle.paquete.nombre }}</h1>
+            <span class="text-lg text-blue-600 font-semibold">{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span>
+        </div>
+
+        <div class="detalle-body grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             
-            <div class="col-info">
-                <h2>Descripción</h2>
-                <p>{{ detalle.paquete.descripcion }}</p>
+            <div class="col-info lg:col-span-2">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-3">Descripción</h2>
+                <p class="text-gray-700 leading-relaxed">{{ detalle.paquete.descripcion }}</p>
                 
-                <h2>Itinerario</h2>
-                <pre class="itinerario">{{ detalle.paquete.itinerario }}</pre>
+                <h2 class="text-2xl font-semibold text-gray-800 mt-6 mb-3">Itinerario</h2>
+                <pre class="itinerario text-gray-700 leading-relaxed whitespace-pre-wrap font-sans">{{ detalle.paquete.itinerario }}</pre>
             </div>
 
-            <div class="col-accion">
+            <div class="col-accion space-y-6">
                 
-                <div *ngIf="detalle.clima && detalle.clima.current_weather" class="clima-widget">
-                    <h3>Clima Actual</h3>
-                    <p class="temperatura">
+                <div *ngIf="detalle.clima && detalle.clima.current_weather" 
+                     class="clima-widget bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Clima Actual</h3>
+                    <p class="temperatura text-4xl font-bold text-blue-700">
                         {{ detalle.clima.current_weather.temperature }} °C
                     </p>
-                    <p class="condicion">
+                    <p class="condicion text-blue-600">
                         <span *ngIf="detalle.clima.current_weather.weathercode === 0">☀️ Despejado</span>
                         <span *ngIf="detalle.clima.current_weather.weathercode > 0">☁️ Nublado/Lluvia</span>
                     </p>
                 </div>
 
-                <div class="compra-box">
-                    <span class="precio">S/ {{ detalle.paquete.precio }}</span>
-                    <p>por persona</p>
+                <div class="compra-box bg-gray-50 p-5 rounded-lg shadow-inner">
+                    <span class="precio text-3xl font-bold text-gray-800">S/ {{ detalle.paquete.precio }}</span>
+                    <p class="text-gray-600 mb-4">por persona</p>
                     
                     <form [formGroup]="reservaForm" (ngSubmit)="reservarAhora()">
                         
-                        <div class="form-group-detalle">
-                            <label for="cantidadViajeros">Viajeros:</label>
-                            <input id="cantidadViajeros" 
-                                   type="number" 
-                                   formControlName="cantidadViajeros" 
-                                   min="1">
+                        <div class="mb-3">
+                            <label for="cantidadViajeros" class="block text-sm font-medium text-gray-700 mb-1">Viajeros:</label>
+                            <input id="cantidadViajeros" type="number" formControlName="cantidadViajeros" min="1"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                                          focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
             
-                        <div class="form-group-detalle">
-                            <label for="puntosAUsar">
+                        <div class="mb-4">
+                            <label for="puntosAUsar" class="block text-sm font-medium text-gray-700 mb-1">
                                 Canjear Puntos (Disponibles: {{ usuarioActual?.puntosAcumulados }})
                             </label>
-                            <input id="puntosAUsar" 
-                                   type="number" 
-                                   formControlName="puntosAUsar" 
-                                   min="0"
-                                   [max]="usuarioActual?.puntosAcumulados"> </div>
+                            <input id="puntosAUsar" type="number" formControlName="puntosAUsar" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                                          focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
                         
-                        <div *ngIf="reservaForm.get('puntosAUsar')?.hasError('puntosInsuficientes')" class="alert-validation">
+                        <div *ngIf="reservaForm.get('puntosAUsar')?.hasError('puntosInsuficientes')" class="text-red-500 text-sm mb-2">
                             No tienes suficientes puntos.
                         </div>
 
-                        <div class="calculo-precio" *ngIf="detalle">
-                            <p>Subtotal ({{ reservaForm.value.cantidadViajeros || 0 }} viajeros): 
+                        <div class="calculo-precio space-y-1 text-sm text-gray-600" *ngIf="detalle">
+                            <p class="flex justify-between">Subtotal: 
                                 <span>S/ {{ totalBruto | number:'1.2-2' }}</span>
                             </p>
-                            <p class="descuento">Descuento ({{ reservaForm.value.puntosAUsar || 0 }} pts): 
+                            <p class="flex justify-between text-green-600">Descuento Puntos: 
                                 <span>- S/ {{ descuentoSoles | number:'1.2-2' }}</span>
                             </p>
-                            <hr>
-                            <h4 class="total-neto">Total a Pagar: 
+                            <hr class="my-2">
+                            <h4 class="total-neto flex justify-between text-lg font-bold text-gray-900">Total a Pagar: 
                                 <span>S/ {{ totalNeto | number:'1.2-2' }}</span>
                             </h4>
                         </div>
             
-                        <button type="submit" [disabled]="reservaForm.invalid" class="btn-primary">
+                        <button type="submit" [disabled]="reservaForm.invalid" 
+                                class="w-full bg-green-600 text-white py-3 px-4 rounded-md font-semibold mt-4
+                                       hover:bg-green-700 transition duration-300
+                                       disabled:opacity-50 disabled:cursor-not-allowed">
                             Reservar y Pagar S/ {{ totalNeto | number:'1.2-2' }}
                         </button>
                     </form>
-                </div> </div> </div> <a routerLink="/paquetes" class="btn-volver">← Volver al Catálogo</a>
+                </div> 
+            </div> 
+        </div> 
+
+        <div class="p-6 border-t border-gray-200">
+            <a routerLink="/paquetes" class="text-blue-600 hover:text-blue-800">← Volver al Catálogo</a>
+        </div>
     </div>
 </div>

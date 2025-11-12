@@ -13,9 +13,6 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { UsuarioResponseDTO } from '../../../../core/interfaces/usuario.interface';
 import { Subscription } from 'rxjs'; // Para limpiar la suscripción
 
-// Importación del Pipe (opcional, si lo creaste)
-import { ReplaceNewlinesPipe } from '../../../../core/pipes/replace-newlines.pipe';
-
 @Component({
   selector: 'app-paquete-detail',
   standalone: true,
@@ -23,7 +20,6 @@ import { ReplaceNewlinesPipe } from '../../../../core/pipes/replace-newlines.pip
     CommonModule, 
     RouterLink,
     ReactiveFormsModule,
-    ReplaceNewlinesPipe // Descomenta si creaste el Pipe
   ],
   templateUrl: './paquete-detail.component.html',
   styleUrls: ['./paquete-detail.component.scss']

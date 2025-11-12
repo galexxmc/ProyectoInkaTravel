@@ -1,35 +1,46 @@
 <div class="catalogo-container">
-    <h1>Descubre tu Próxima Aventura</h1>
-    <p>Explora nuestro catálogo de destinos inolvidables en el Perú.</p>
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Descubre tu Próxima Aventura</h1>
+    <p class="text-lg text-gray-600 mb-8">Explora nuestro catálogo de destinos inolvidables en el Perú.</p>
 
-    <div *ngIf="isLoading" class="loading">
-        Cargando paquetes... 🌎
-    </div>
+    <div *ngIf="isLoading" class="text-center p-12">
+        <p class="text-lg text-gray-500">Cargando paquetes... 🌎</p>
+        </div>
 
-    <div *ngIf="errorMessage" class="alert-error">
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
         {{ errorMessage }}
     </div>
 
-    <div *ngIf="!isLoading && !errorMessage" class="paquetes-grid">
+    <div *ngIf="!isLoading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <div *ngFor="let paquete of paquetes" class="paquete-card">
+        <div *ngFor="let paquete of paquetes" 
+             class="paquete-card bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transition duration-300 hover:shadow-xl">
             
-            <div class="paquete-info">
-                <h3>{{ paquete.nombre }}</h3>
-                <p class="region">{{ paquete.region }} - {{ paquete.categoria }}</p>
-                <p class="descripcion">{{ paquete.descripcion | slice:0:100 }}...</p> </div>
+            <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
+                (Imagen del Paquete)
+            </div>
             
-            <div class="paquete-footer">
-                <span class="precio">S/ {{ paquete.precio }}</span>
-                <a [routerLink]="['/paquetes', paquete.id]" class="btn-detalle">
+            <div class="paquete-info p-4 flex-grow">
+                <h3 class="text-xl font-semibold text-gray-800 mb-1">{{ paquete.nombre }}</h3>
+                <p class="text-sm text-gray-500 mb-3">{{ paquete.region }} - {{ paquete.categoria }}</p>
+                <p class="descripcion text-gray-700 text-sm">
+                    {{ paquete.descripcion | slice:0:100 }}...
+                </p>
+            </div>
+            
+            <div class="paquete-footer p-4 bg-gray-50 border-t flex justify-between items-center">
+                <span class="precio text-xl font-bold text-blue-600">S/ {{ paquete.precio }}</span>
+                
+                <a [routerLink]="['/paquetes', paquete.id]" 
+                   class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium 
+                          hover:bg-blue-600 transition duration-300">
                     Ver Detalle
                 </a>
             </div>
 
         </div>
 
-        <div *ngIf="paquetes.length === 0" class="no-paquetes">
-            <p>No se encontraron paquetes que coincidan con tu búsqueda.</p>
+        <div *ngIf="paquetes.length === 0" class="col-span-full text-center p-12">
+            <p class="text-lg text-gray-500">No se encontraron paquetes que coincidan con tu búsqueda.</p>
         </div>
     </div>
 </div>

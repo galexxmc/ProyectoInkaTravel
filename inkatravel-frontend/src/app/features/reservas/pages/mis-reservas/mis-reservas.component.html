@@ -1,37 +1,40 @@
-<div class="mis-reservas-container">
-    <h1>Mi Historial de Reservas</h1>
+<div class="mis-reservas-container max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">Mi Historial de Reservas</h1>
 
-    <div *ngIf="isLoading" class="loading">
-        Cargando historial... ✈️
+    <div *ngIf="isLoading" class="text-center p-12">
+        <p class="text-lg text-gray-500">Cargando historial... ✈️</p>
     </div>
 
-    <div *ngIf="errorMessage" class="alert-error">
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
         {{ errorMessage }}
     </div>
 
-    <div *ngIf="!isLoading && !errorMessage && reservas.length > 0" class="reservas-tabla-container">
-        <table>
-            <thead>
+    <div *ngIf="!isLoading && !errorMessage && reservas.length > 0" 
+         class="reservas-tabla-container bg-white shadow-lg rounded-lg overflow-hidden">
+        
+        <table class="w-full text-left">
+            <thead class="bg-gray-100 border-b border-gray-200">
                 <tr>
-                    <th>ID Reserva</th>
-                    <th>Paquete</th>
-                    <th>Fecha de Reserva</th>
-                    <th>Total Pagado</th>
-                    <th>Estado</th>
+                    <th class="p-4 text-sm font-semibold text-gray-600">ID Reserva</th>
+                    <th class="p-4 text-sm font-semibold text-gray-600">Paquete</th>
+                    <th class="p-4 text-sm font-semibold text-gray-600">Fecha</th>
+                    <th class="p-4 text-sm font-semibold text-gray-600">Total Pagado</th>
+                    <th class="p-4 text-sm font-semibold text-gray-600">Estado</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let r of reservas">
-                    <td>#{{ r.id }}</td>
-                    <td>{{ r.paqueteNombre }}</td>
-                    <td>{{ r.fechaReserva | date:'dd/MM/yyyy' }}</td>
-                    <td>S/ {{ r.total }}</td>
-                    <td>
-                        <span class="estado" [ngClass]="{
-                            'estado-confirmada': r.estado === 'CONFIRMADA',
-                            'estado-pendiente': r.estado === 'PENDIENTE',
-                            'estado-cancelada': r.estado === 'CANCELADA'
-                        }">
+                <tr *ngFor="let r of reservas" class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="p-4 text-gray-800 font-medium">#{{ r.id }}</td>
+                    <td class="p-4 text-gray-700">{{ r.paqueteNombre }}</td>
+                    <td class="p-4 text-gray-700">{{ r.fechaReserva | date:'dd/MM/yyyy' }}</td>
+                    <td class="p-4 text-gray-800 font-medium">S/ {{ r.total }}</td>
+                    <td class="p-4">
+                        <span class="estado px-3 py-1 rounded-full text-xs font-semibold" 
+                              [ngClass]="{
+                                'bg-green-100 text-green-800': r.estado === 'CONFIRMADA',
+                                'bg-yellow-100 text-yellow-800': r.estado === 'PENDIENTE',
+                                'bg-red-100 text-red-800': r.estado === 'CANCELADA'
+                              }">
                             {{ r.estado }}
                         </span>
                     </td>
@@ -40,8 +43,13 @@
         </table>
     </div>
 
-    <div *ngIf="!isLoading && reservas.length === 0" class="no-reservas">
-        <p>Aún no has realizado ninguna reserva.</p>
-        <a routerLink="/paquetes" class="btn-primary">Explorar Catálogo</a>
+    <div *ngIf="!isLoading && reservas.length === 0" 
+         class="no-reservas text-center bg-white shadow-lg rounded-lg p-12">
+        <p class="text-lg text-gray-600 mb-4">Aún no has realizado ninguna reserva.</p>
+        <a routerLink="/paquetes" 
+           class="bg-blue-600 text-white py-2 px-5 rounded-md font-semibold 
+                  hover:bg-blue-700 transition duration-300">
+           Explorar Catálogo
+        </a>
     </div>
 </div>
