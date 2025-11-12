@@ -1,0 +1,25 @@
+<div class="pago-exitoso-container">
+    <div class="pago-exitoso-card">
+
+        <div *ngIf="isLoading">
+            <h2>Verificando tu suscripción...</h2>
+            <p>Por favor, espera...</p>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert-error">
+            {{ errorMessage }}
+        </div>
+
+        <div *ngIf="!isLoading && !errorMessage">
+            <div class="icono-exito">
+                <span>🌟</span>
+            </div>
+            <h2>¡Bienvenido a InkaTravel Premium!</h2>
+            <p>Tu suscripción ha sido activada (RF-06).</p>
+            <p>Tu `localStorage` ha sido actualizado.</p>
+
+            <button (click)="irAlPerfil()" class="btn-primary">Ir a Mi Perfil</button>
+        </div>
+
+    </div>
+</div>

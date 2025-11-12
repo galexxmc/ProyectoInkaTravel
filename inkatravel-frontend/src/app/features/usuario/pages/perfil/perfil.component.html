@@ -1,0 +1,40 @@
+<div class="perfil-container">
+    <h1>Mi Perfil</h1>
+
+    <div *ngIf="isLoading" class="loading">
+        Cargando perfil... 👤
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-error">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="usuario && !isLoading" class="perfil-card">
+        <div class="perfil-info">
+            <p>
+                <strong>Nombre:</strong>
+                <span>{{ usuario.nombre }}</span>
+            </p>
+            <p>
+                <strong>Correo:</strong>
+                <span>{{ usuario.correo }}</span>
+            </p>
+            <p>
+                <strong>Tipo de Cuenta:</strong>
+                <span class="tipo-cuenta {{ usuario.tipo | lowercase }}">
+                    {{ usuario.tipo }}
+                </span>
+            </p>
+            <p>
+                <strong>Puntos Disponibles:</strong>
+                <span>{{ usuario.puntosAcumulados }} 💰</span>
+            </p>
+        </div>
+
+        <div *ngIf="usuario.tipo === 'GRATIS'" class="premium-banner">
+            <h3>¡Conviértete en Premium!</h3>
+            <p>Obtén el doble de puntos en tus compras y mejores descuentos.</p>
+            <button (click)="irAPremium()">Hazte Premium Ahora</button>
+        </div>
+    </div>
+</div>

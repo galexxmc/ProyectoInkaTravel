@@ -4,6 +4,7 @@ import com.inkatravel.service.PagoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 import java.util.Map;
 import java.util.Objects;
@@ -32,26 +33,30 @@ public class PagoController {
         }
     }
 
-    /**
-     * Endpoint 2: Recibir el Webhook (Llamado por Mercado Pago)
-     * PÚBLICO
-     * Escuchará en: POST https://tu-url-de-ngrok.io/api/pagos/webhook
-     */
     @PostMapping("/webhook")
     public ResponseEntity<?> recibirWebhook(@RequestBody Map<String, Object> payload) {
-        try {
-            // El SDK 2.1.7 a veces envía 'action' y 'data.id'
-            // El SDK 2.5+ a veces envía 'type' y 'data.id'
 
-            String topic = (String) payload.get("type"); // SDK 2.5+
-            String action = (String) payload.get("action"); // SDK 2.1.7
+        // --- LOG DE DEPURACIÓN (Lo dejamos por si acaso) ---
+        System.out.println("--- WEBHOOK RECIBIDO ---");
+        System.out.println(payload);
+
+        try {
+            String topic = (String) payload.get("type");
+            String action = (String) payload.get("action");
 
             Map<String, Object> data = (Map<String, Object>) payload.get("data");
             Long paymentId = null;
 
-            if (data != null && data.get("id") != null) {
-                paymentId = Long.parseLong(data.get("id").toString());
+            // --- ¡CAMBIO AQUÍ! ---
+            // Si no hay 'data' o 'data.id', simplemente salimos con 200 OK
+            // para que MP deje de insistir. No registramos un error.
+            if (data == null || data.get("id") == null) {
+                System.out.println("Webhook ignorado (sin data.id): " + topic);
+                return ResponseEntity.ok().build(); // <-- Devolvemos OK
             }
+            // --- FIN DEL CAMBIO ---
+
+            paymentId = Long.parseLong(data.get("id").toString());
 
             // Lógica de Webhook para SDK 2.1.7 (payment.created)
             if (action != null && action.equals("payment.created") && paymentId != null) {
@@ -62,11 +67,30 @@ public class PagoController {
                 pagoService.procesarWebhook(paymentId, "payment");
             }
 
-            // Respondemos 200 OK para que Mercado Pago sepa que lo recibimos
             return ResponseEntity.ok().build();
 
         } catch (Exception e) {
-            // Si algo falla, MP lo reintentará.
+            System.err.println("¡ERROR FATAL EN WEBHOOK! " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * (NUEVO - RF-06 Simulado)
+     * Endpoint 3: Crear Link de Pago para Suscripción (Llamado por Angular)
+     * PROTEGIDO (Requiere JWT)
+     */
+    @PostMapping("/crear-checkout-premium")
+    public ResponseEntity<?> crearCheckoutPremium(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body("No estás autenticado.");
+        }
+        try {
+            // Llama al nuevo método del servicio
+            String linkDePago = pagoService.crearLinkSuscripcion(principal);
+            return ResponseEntity.ok(Map.of("url", linkDePago));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

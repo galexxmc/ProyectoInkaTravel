@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
+import java.security.Principal;
+
+
+
+
 // --- SDK de Mercado Pago ---
 import com.mercadopago.client.payment.PaymentClient; // <-- IMPORTAR
 import com.mercadopago.client.preference.*; // <-- IMPORTAR
@@ -96,7 +101,7 @@ public class PagoServiceImpl implements PagoService {
                 .backUrls(backUrls)
                 .autoReturn("approved") // Redirige automáticamente al aprobar
                 .notificationUrl(appBaseUrl + "/api/pagos/webhook") // ¡LA CLAVE!
-                .externalReference(reserva.getId().toString()) // Vincula el pago a nuestra reserva
+                .externalReference("RESERVA_ID_" + reserva.getId().toString())
                 .build();
 
         // 4. Llamar al SDK de Mercado Pago
@@ -108,32 +113,61 @@ public class PagoServiceImpl implements PagoService {
     }
 
     /**
-     * (Flujo 2) Endpoint 2: Procesar el Webhook
+     * (ACTUALIZADO - Flujo 2) Endpoint 2: Procesar el Webhook
+     * Ahora maneja AMBOS tipos de pago (Reservas y Suscripciones)
      */
     @Override
     @Transactional
     public void procesarWebhook(Long paymentId, String topic) throws Exception {
-        if (topic == null || (!topic.equals("payment") && !topic.equals("merchant_order"))) {
-            return; // Ignoramos notificaciones que no sean de pago
+        if (topic == null || !topic.equals("payment")) {
+            return;
         }
 
-        // 1. Consultar a Mercado Pago por los detalles de este pago
+        // 1. Consultar a Mercado Pago (igual que antes)
         PaymentClient client = new PaymentClient();
         Payment payment = client.get(paymentId);
 
-        // 2. Verificar que el pago esté APROBADO
+        // 2. Verificar que el pago esté APROBADO (igual que antes)
         if (payment.getStatus() == null || !payment.getStatus().equals("approved")) {
-            return; // El pago no fue aprobado (falló, pendiente, etc.)
+            return;
         }
 
-        // 3. Obtener el ID de nuestra reserva (que guardamos en 'external_reference')
-        Integer reservaId = Integer.parseInt(payment.getExternalReference());
+        // 3. Obtener la Referencia Externa (¡LA CLAVE!)
+        String externalReference = payment.getExternalReference();
 
-        Reserva reserva = reservaRepository.findById(reservaId)
-                .orElseThrow(() -> new Exception("Webhook: Reserva no encontrada con ID: " + reservaId));
+        // --- 4. LÓGICA IF/ELSE ---
+        if (externalReference.startsWith("RESERVA_ID_")) {
+            // --- Es un PAGO DE PAQUETE ---
+            Integer reservaId = Integer.parseInt(externalReference.replace("RESERVA_ID_", ""));
+            Reserva reserva = reservaRepository.findById(reservaId)
+                    .orElseThrow(() -> new Exception("Webhook: Reserva no encontrada con ID: " + reservaId));
 
-        // 4. Llamar a la lógica central
-        confirmarLogicaDePago(reserva, "Mercado Pago (Automático)", paymentId.toString());
+            // Llama a la lógica central de confirmación de reserva
+            confirmarLogicaDePago(reserva, "Mercado Pago (Automático)", paymentId.toString());
+
+        } else if (externalReference.startsWith("SUSCRIPCION_ID_")) {
+            // --- Es un PAGO DE SUSCRIPCIÓN (RF-06) ---
+            Integer usuarioId = Integer.parseInt(externalReference.replace("SUSCRIPCION_ID_", ""));
+            Usuario usuario = usuarioRepository.findById(usuarioId)
+                    .orElseThrow(() -> new Exception("Webhook Suscripción: Usuario no encontrado"));
+
+            // Actualizamos al usuario a PREMIUM
+            usuario.setTipo(TipoUsuario.PREMIUM);
+            usuario.setSuscripcionActiva(true);
+            usuarioRepository.save(usuario);
+
+            // (Opcional) Creamos un registro de pago para esto también
+            // (Opcional) Enviamos email de "Bienvenido a Premium"
+            emailService.enviarEmailSimple(
+                    usuario.getCorreo(),
+                    "¡Bienvenido a InkaTravel Premium!",
+                    "Hola " + usuario.getNombre() + ",\n\nTu suscripción Premium ha sido activada."
+            );
+
+        } else {
+            // Referencia desconocida, la ignoramos
+            throw new Exception("Webhook: Referencia externa no reconocida: " + externalReference);
+        }
     }
 
 
@@ -221,4 +255,56 @@ public class PagoServiceImpl implements PagoService {
 
         return new PagoResponseDTO(pagoGuardado);
     }
+
+    /**
+     * (NUEVO - RF-06 Simulado)
+     * Implementación de crearLinkSuscripcion (usando PreferenceClient)
+     */
+    @Override
+    public String crearLinkSuscripcion(Principal principal) throws Exception {
+        Usuario usuario = usuarioRepository.findByCorreo(principal.getName())
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+        if (usuario.getTipo() == TipoUsuario.PREMIUM || usuario.getTipo() == TipoUsuario.ADMIN) {
+            throw new Exception("Este usuario ya es Premium o Admin.");
+        }
+
+        // 1. Crear el ítem de pago (Suscripción Premium por S/ 10)
+        PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                .id("PREMIUM-001")
+                .title("Suscripción InkaTravel Premium")
+                .description("Acceso a beneficios exclusivos por 30 días")
+                .quantity(1)
+                .currencyId("PEN")
+                .unitPrice(new BigDecimal("10.00")) // Precio de la suscripción
+                .build();
+
+        // 2. Definir las URLs de redirección
+        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                .success(appBaseUrl + "/suscripcion-exitosa")
+                .failure(appBaseUrl + "/pago-fallido")
+                .build();
+
+        // 3. Crear la Preferencia de Pago
+        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                .items(List.of(itemRequest))
+                .backUrls(backUrls)
+                .autoReturn("approved")
+                .notificationUrl(appBaseUrl + "/api/pagos/webhook") // <-- ¡Usa el MISMO webhook!
+                // --- ¡LA CLAVE! ---
+                .externalReference("SUSCRIPCION_ID_" + usuario.getId().toString())
+                .build();
+
+        // 4. Llamar al SDK de Mercado Pago
+        PreferenceClient client = new PreferenceClient();
+        Preference preference = client.create(preferenceRequest);
+
+        // 5. Devolver el link de pago (URL del checkout)
+        return preference.getInitPoint();
+    }
+
+
+
+
+
 }

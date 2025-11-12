@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { UsuarioResponseDTO } from '../interfaces/usuario.interface';
+
 // (Importante: Necesitarás crear esta interfaz, la usaremos después)
 // import { UsuarioResponseDTO } from '../interfaces/usuario.interface';
 
@@ -37,10 +39,14 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/registro`, usuario);
   }
 
-  // --- Manejo del Token (Lo añadiremos después) ---
-
-  // guardarToken(token: string) { ... }
-  // getToken(): string | null { ... }
-  // estaLogueado(): boolean { ... }
-  // logout() { ... }
+/**
+   * (NUEVO) Obtiene la información del usuario logueado desde localStorage.
+   */
+  getUsuarioInfo(): UsuarioResponseDTO | null {
+    const userJson = localStorage.getItem('user_info');
+    if (!userJson) {
+      return null; // No hay usuario logueado
+    }
+    return JSON.parse(userJson) as UsuarioResponseDTO;
+  }
 }

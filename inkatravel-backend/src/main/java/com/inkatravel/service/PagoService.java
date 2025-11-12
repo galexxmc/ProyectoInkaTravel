@@ -1,6 +1,7 @@
 package com.inkatravel.service;
 
 import com.inkatravel.dto.PagoResponseDTO; // <-- IMPORTAR
+import java.security.Principal;
 /**
  * Lógica de negocio para Pagos y Confirmaciones.
  */
@@ -27,4 +28,12 @@ public interface PagoService {
      * @param topic El tipo de notificación (ej: "payment").
      */
     void procesarWebhook(Long paymentId, String topic) throws Exception;
+    /**
+     * (NUEVO - RF-06 Simulado)
+     * Crea un link de pago ÚNICO para la suscripción Premium.
+     * @param principal El usuario que se está suscribiendo.
+     * @return El link (URL) al checkout de Mercado Pago.
+     */
+    String crearLinkSuscripcion(Principal principal) throws Exception;
+
 }

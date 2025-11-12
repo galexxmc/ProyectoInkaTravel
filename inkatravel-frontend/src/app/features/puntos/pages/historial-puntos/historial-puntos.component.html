@@ -1,0 +1,41 @@
+<div class="historial-puntos-container">
+    <h1>Mi Historial de Puntos</h1>
+
+    <div *ngIf="isLoading" class="loading">
+        Cargando historial... 💰
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-error">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && historial.length > 0" class="movimientos-tabla-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Descripción (Motivo)</th>
+                    <th>Puntos (Ganados/Canjeados)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let m of historial">
+                    <td>{{ m.fechaOtorgamiento | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ m.motivo }}</td>
+                    <td>
+                        <span [ngClass]="{
+                            'puntos-ganados': m.cantidadPuntos > 0,
+                            'puntos-canjeados': m.cantidadPuntos < 0
+                        }">
+                            {{ m.cantidadPuntos > 0 ? '+' : '' }}{{ m.cantidadPuntos }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="!isLoading && historial.length === 0" class="no-historial">
+        <p>Aún no tienes movimientos en tu historial de puntos.</p>
+    </div>
+</div>  

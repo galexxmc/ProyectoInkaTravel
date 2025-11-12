@@ -1,59 +1,88 @@
 <div class="detalle-container">
-  <div *ngIf="isLoading" class="loading">Cargando detalle... 🌎</div>
 
-  <div *ngIf="errorMessage" class="alert-error">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="detalle && !isLoading" class="detalle-content">
-    <div class="detalle-header">
-      <h1>{{ detalle.paquete.nombre }}</h1>
-      <span class="region"
-        >{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span
-      >
+    <div *ngIf="isLoading" class="loading">
+        Cargando detalle... 🌎
     </div>
 
-    <div class="detalle-body">
-      <div class="col-info">
-        <h2>Descripción</h2>
-        <p>{{ detalle.paquete.descripcion }}</p>
-
-        <h2>Itinerario</h2>
-        <p>{{ detalle.paquete.itinerario }}</p>
-      </div>
-
-      <div class="col-accion">
-        <div
-          *ngIf="detalle.clima && detalle.clima.current_weather"
-          class="clima-widget"
-        >
-          <h3>Clima Actual</h3>
-          <p class="temperatura">
-            {{ detalle.clima.current_weather.temperature }} °C
-          </p>
-          <p class="condicion">
-            <span *ngIf="detalle.clima.current_weather.weathercode === 0"
-              >☀️ Despejado</span
-            >
-            <span *ngIf="detalle.clima.current_weather.weathercode > 0"
-              >☁️ Nublado/Lluvia</span
-            >
-          </p>
-        </div>
-
-        <div class="compra-box">
-          <span class="precio">S/ {{ detalle.paquete.precio }}</span>
-          <p>por persona</p>
-          <button
-            (click)="reservarAhora(detalle.paquete.id)"
-            class="btn-primary"
-          >
-            Reservar Ahora
-          </button>
-        </div>
-      </div>
+    <div *ngIf="errorMessage" class="alert-error">
+        {{ errorMessage }}
     </div>
 
-    <a routerLink="/paquetes" class="btn-volver">← Volver al Catálogo</a>
-  </div>
+    <div *ngIf="detalle && !isLoading" class="detalle-content">
+        
+        <div class="detalle-header">
+            <h1>{{ detalle.paquete.nombre }}</h1>
+            <span class="region">{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span>
+        </div>
+
+        <div class="detalle-body">
+            
+            <div class="col-info">
+                <h2>Descripción</h2>
+                <p>{{ detalle.paquete.descripcion }}</p>
+                
+                <h2>Itinerario</h2>
+                <pre class="itinerario">{{ detalle.paquete.itinerario }}</pre>
+            </div>
+
+            <div class="col-accion">
+                
+                <div *ngIf="detalle.clima && detalle.clima.current_weather" class="clima-widget">
+                    <h3>Clima Actual</h3>
+                    <p class="temperatura">
+                        {{ detalle.clima.current_weather.temperature }} °C
+                    </p>
+                    <p class="condicion">
+                        <span *ngIf="detalle.clima.current_weather.weathercode === 0">☀️ Despejado</span>
+                        <span *ngIf="detalle.clima.current_weather.weathercode > 0">☁️ Nublado/Lluvia</span>
+                    </p>
+                </div>
+
+                <div class="compra-box">
+                    <span class="precio">S/ {{ detalle.paquete.precio }}</span>
+                    <p>por persona</p>
+                    
+                    <form [formGroup]="reservaForm" (ngSubmit)="reservarAhora()">
+                        
+                        <div class="form-group-detalle">
+                            <label for="cantidadViajeros">Viajeros:</label>
+                            <input id="cantidadViajeros" 
+                                   type="number" 
+                                   formControlName="cantidadViajeros" 
+                                   min="1">
+                        </div>
+            
+                        <div class="form-group-detalle">
+                            <label for="puntosAUsar">
+                                Canjear Puntos (Disponibles: {{ usuarioActual?.puntosAcumulados }})
+                            </label>
+                            <input id="puntosAUsar" 
+                                   type="number" 
+                                   formControlName="puntosAUsar" 
+                                   min="0"
+                                   [max]="usuarioActual?.puntosAcumulados"> </div>
+                        
+                        <div *ngIf="reservaForm.get('puntosAUsar')?.hasError('puntosInsuficientes')" class="alert-validation">
+                            No tienes suficientes puntos.
+                        </div>
+
+                        <div class="calculo-precio" *ngIf="detalle">
+                            <p>Subtotal ({{ reservaForm.value.cantidadViajeros || 0 }} viajeros): 
+                                <span>S/ {{ totalBruto | number:'1.2-2' }}</span>
+                            </p>
+                            <p class="descuento">Descuento ({{ reservaForm.value.puntosAUsar || 0 }} pts): 
+                                <span>- S/ {{ descuentoSoles | number:'1.2-2' }}</span>
+                            </p>
+                            <hr>
+                            <h4 class="total-neto">Total a Pagar: 
+                                <span>S/ {{ totalNeto | number:'1.2-2' }}</span>
+                            </h4>
+                        </div>
+            
+                        <button type="submit" [disabled]="reservaForm.invalid" class="btn-primary">
+                            Reservar y Pagar S/ {{ totalNeto | number:'1.2-2' }}
+                        </button>
+                    </form>
+                </div> </div> </div> <a routerLink="/paquetes" class="btn-volver">← Volver al Catálogo</a>
+    </div>
 </div>
