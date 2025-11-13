@@ -1,7 +1,15 @@
 <div class="detalle-container max-w-6xl mx-auto">
 
-    <div *ngIf="isLoading" class="text-center p-12 bg-">
-        <p class="text-lg text-gray-500">Cargando detalle... 🌎</p>
+    <div *ngIf="isLoading" 
+        class="fixed inset-0 z-50 flex items-center justify-center ">
+
+        <div class="flex flex-col items-center p-8 rounded-lg"> 
+
+            <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
+                class="loading-sol-inca w-24 h-24 mb-4">
+
+            <p class="text-gray-800 text-2xl font-semibold">Cargando detalle...</p>
+        </div>
     </div>
 
     <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">

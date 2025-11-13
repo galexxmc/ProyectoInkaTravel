@@ -1,0 +1,9 @@
+/* Animación para el Sol Inca */
+.loading-sol-inca {
+  animation: spin 2s linear infinite; // Nombre de la animación, duración, velocidad, repetición
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }    // Empieza sin rotación
+  100% { transform: rotate(360deg); } // Termina con una rotación completa
+}

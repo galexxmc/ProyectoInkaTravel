@@ -1,8 +1,16 @@
 <div class="historial-puntos-container max-w-5xl mx-auto">
     <h1 class="text-4xl font-bold text-gray-800 mb-6">Mi Historial de Puntos</h1>
     
-    <div *ngIf="isLoading" class="text-center p-12">
-        <p class="text-lg text-gray-500">Cargando historial... 💰</p>
+    <div *ngIf="isLoading" 
+        class="fixed inset-0 z-50 flex items-center justify-center ">
+
+        <div class="flex flex-col items-center p-8 rounded-lg"> 
+
+            <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
+                class="loading-sol-inca w-24 h-24 mb-4">
+
+            <p class="text-gray-800 text-2xl font-semibold">Cargando historial...</p>
+        </div>
     </div>
     
     <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
@@ -15,16 +23,16 @@
         <table class="w-full text-left">
             <thead class="bg-gray-100 border-b border-gray-200">
                 <tr>
-                    <th class="p-4 text-sm font-semibold text-gray-600">Fecha</th>
-                    <th class="p-4 text-sm font-semibold text-gray-600">Descripción (Motivo)</th>
-                    <th class="p-4 text-sm font-semibold text-gray-600">Puntos (Ganados/Canjeados)</th>
+                    <th class="p-4 text-sm text-center font-semibold text-gray-600">Fecha</th>
+                    <th class="p-4 text-sm text-center font-semibold text-gray-600">Descripción (Motivo)</th>
+                    <th class="p-4 text-sm text-center font-semibold text-gray-600">Puntos (Ganados/Canjeados)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let m of historial" class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 text-gray-700">{{ m.fechaOtorgamiento | date:'dd/MM/yyyy' }}</td>
-                    <td class="p-4 text-gray-700">{{ m.motivo }}</td>
-                    <td class="p-4 font-bold">
+                    <td class="p-4 text-center text-gray-700">{{ m.fechaOtorgamiento | date:'dd/MM/yyyy' }}</td>
+                    <td class="p-4 text-center text-gray-700">{{ m.motivo }}</td>
+                    <td class="p-4 text-center font-bold">
                         <span [ngClass]="{
                             'text-green-600': m.cantidadPuntos > 0,
                             'text-red-600': m.cantidadPuntos < 0

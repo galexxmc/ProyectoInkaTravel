@@ -26,16 +26,17 @@ export class GestionReservasComponent implements OnInit {
   errorMessage: string = '';
 
   // --- Control del Modal de CONFIRMACIÓN ---
-  // (Asegúrate de que estas líneas existan)
   showConfirmModal: boolean = false;
   reservaIdParaConfirmar: number | null = null;
   modalConfirmTitulo: string = 'Confirmar Pago';
   modalConfirmMensaje: string = '¿Estás seguro de que quieres confirmar este pago manualmente? Esta acción dará puntos y enviará un email al usuario.';
 
-  // --- Control del Modal de INFORMACIÓN (Éxito/Error) ---
-  showInfoModal: boolean = false;
-  modalInfoTitulo: string = '';
-  modalInfoMensaje: string = '';
+  // --- ¡ACTUALIZADO! Notificación "Toast" (Éxito/Error) ---
+  showNotification: boolean = false;
+  notificationTitle: string = '';
+  notificationMessage: string = '';
+  notificationType: 'success' | 'error' = 'success';
+  private notificationTimer: any; // Para el setTimeout
 
   // --- Estado de Carga (mientras se envía el email) ---
   isConfirmingPayment: boolean = false;
@@ -57,7 +58,7 @@ export class GestionReservasComponent implements OnInit {
         this.reservas = data.sort((a, b) => {
           if (a.estado === 'PENDIENTE' && b.estado !== 'PENDIENTE') return -1;
           if (a.estado !== 'PENDIENTE' && b.estado === 'PENDIENTE') return 1;
-          return 0;
+          return 0; // Mantenemos el orden original para otros estados
         });
         this.isLoading = false;
       },
@@ -72,11 +73,11 @@ export class GestionReservasComponent implements OnInit {
   // --- Lógica de Modales ---
 
   /**
-   * 1. Se llama al hacer clic en el botón "Confirmar Pago".
+   * 1. Se llama al hacer clic en el botón "Confirmar Pago" de una reserva.
    */
   abrirModalConfirmacion(id: number): void {
-    this.reservaIdParaConfirmar = id; // <-- Aquí se guarda el ID
-    this.showConfirmModal = true;
+    this.reservaIdParaConfirmar = id; // Guarda el ID
+    this.showConfirmModal = true;           // Muestra el modal
   }
 
   /**
@@ -84,46 +85,60 @@ export class GestionReservasComponent implements OnInit {
    */
   cerrarModalConfirmacion(): void {
     this.showConfirmModal = false;
-    this.reservaIdParaConfirmar = null; // <-- Aquí se resetea a null
+    this.reservaIdParaConfirmar = null;
   }
 
   /**
-   * 3. Cierra el modal de "Éxito/Error"
+   * (NUEVO) Muestra la notificación "toast" y la oculta después de 3 segundos.
    */
-  cerrarModalInfo(): void {
-    this.showInfoModal = false;
+  mostrarNotificacion(titulo: string, mensaje: string, tipo: 'success' | 'error') {
+    this.notificationTitle = titulo;
+    this.notificationMessage = mensaje;
+    this.notificationType = tipo;
+    this.showNotification = true;
+
+    if (this.notificationTimer) {
+      clearTimeout(this.notificationTimer);
+    }
+    
+    this.notificationTimer = setTimeout(() => {
+      this.showNotification = false;
+    }, 3000);
   }
 
   /**
-   * 4. Se llama si el usuario hace clic en "Confirmar" en el modal.
+   * 3. Se llama si el usuario hace clic en "Confirmar" en el modal.
+   * (ACTUALIZADO para usar el Toast)
    */
   ejecutarConfirmacion(): void {
-    // Esta guarda previene el 'null'
-    if (!this.reservaIdParaConfirmar) {
-      console.error("Error: ID de reserva es nulo. No se puede confirmar.");
-      return; 
-    }
+    if (!this.reservaIdParaConfirmar) return;
 
-    const idParaConfirmar = this.reservaIdParaConfirmar; // Guardamos el ID por si acaso
+    const idParaConfirmar = this.reservaIdParaConfirmar;
+    
     this.cerrarModalConfirmacion(); // Cierra el modal de confirmación
-    this.isConfirmingPayment = true; // MUESTRA EL LOADING
+    this.isConfirmingPayment = true; // ¡MUESTRA EL LOADING!
 
-    this.adminService.confirmarPago(idParaConfirmar).subscribe({ // Usa el ID guardado
-      next: () => {
-        this.isConfirmingPayment = false;
-        this.cargarReservas(); 
+    this.adminService.confirmarPago(idParaConfirmar).subscribe({
+      next: (pagoConfirmado) => {
+        this.isConfirmingPayment = false; // Oculta el loading
+        this.cargarReservas(); // Recarga la lista
         
-        this.modalInfoTitulo = '¡Éxito!';
-        this.modalInfoMensaje = 'Reserva confirmada exitosamente. El email ha sido enviado.';
-        this.showInfoModal = true;
+        // ¡MUESTRA LA NOTIFICACIÓN "TOAST"!
+        this.mostrarNotificacion(
+          '¡Éxito!',
+          `Reserva #${pagoConfirmado.reservaId} confirmada. Email enviado.`,
+          'success'
+        );
       },
       error: (err) => {
-        this.isConfirmingPayment = false;
+        this.isConfirmingPayment = false; // Oculta el loading
         
-        this.modalInfoTitulo = 'Error';
-        // Usamos err.error (que es el mensaje del backend) o el mensaje genérico
-        this.modalInfoMensaje = err.error || 'Ocurrió un error al confirmar.';
-        this.showInfoModal = true;
+        // ¡MUESTRA LA NOTIFICACIÓN "TOAST" DE ERROR!
+        this.mostrarNotificacion(
+          'Error',
+          err.error || 'Ocurrió un error al confirmar.',
+          'error'
+        );
       }
     });
   }

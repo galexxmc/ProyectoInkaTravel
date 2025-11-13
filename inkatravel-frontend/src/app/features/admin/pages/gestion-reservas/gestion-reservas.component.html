@@ -1,11 +1,8 @@
 <div *ngIf="isConfirmingPayment" 
      class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/75 backdrop-blur-sm">
-    
     <div class="flex flex-col items-center p-8 rounded-lg">
-        
         <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
-             class="loading-sol-inca w-18 h-18 mb-4">
-        
+             class="loading-sol-inca w-24 h-24 mb-4">
         <p class="text-white text-2xl font-semibold">Procesando solicitud...</p>
     </div>
 </div>
@@ -13,10 +10,17 @@
 <div class="gestion-container">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Reservas</h1>
 
-    <div *ngIf="isLoading" class="text-center p-12 bg-white rounded-lg shadow-md">
-        <p class="text-lg text-gray-500">Cargando reservas...</p>
-    </div>
+    <div *ngIf="isLoading" 
+        class="fixed inset-0 z-50 flex items-center justify-center ">
 
+        <div class="flex flex-col items-center p-8 rounded-lg"> 
+
+            <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
+                class="loading-sol-inca w-24 h-24 mb-4">
+
+            <p class="text-gray-800 text-2xl font-semibold">Cargando reservas...</p>
+        </div>
+    </div>
     <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
         {{ errorMessage }}
     </div>
@@ -33,8 +37,7 @@
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Fecha</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Total</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Acción</th>
-                </tr>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Acción</th> </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 
@@ -45,13 +48,13 @@
                 </tr>
 
                 <tr *ngFor="let r of reservas" class="hover:bg-gray-50">
-                    <td class="text-center px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">#{{ r.id }}</td>
-                    <td class="text-center px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ r.usuarioNombre }}</td>
-                    <td class="text-center px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ r.paqueteNombre }}</td>
-                    <td class="text-center px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ r.fechaReserva | date:'dd/MM/yyyy' }}</td>
-                    <td class="text-center px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">S/ {{ r.total }}</td>
-                    <td class="text-center px-6 py-4 whitespace-nowrap">
-                        <span class="text-center px-3 py-1 rounded-full text-xs font-semibold" 
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-900 font-medium">#{{ r.id }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-700">{{ r.usuarioNombre }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">{{ r.paqueteNombre }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">{{ r.fechaReserva | date:'dd/MM/yyyy' }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-900 font-medium">S/ {{ r.total }}</td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <span class="px-3 py-1 text-center rounded-full text-xs font-semibold" 
                               [ngClass]="{
                                 'bg-green-100 text-green-800': r.estado === 'CONFIRMADA',
                                 'bg-yellow-100 text-yellow-800': r.estado === 'PENDIENTE',
@@ -60,19 +63,16 @@
                             {{ r.estado }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-
+                    <td class="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-center">
                         <button *ngIf="r.estado === 'PENDIENTE'" 
                                 (click)="abrirModalConfirmacion(r.id)"
                                 class="bg-green-500 text-white px-3 py-1 rounded-md text-xs
-                                    hover:bg-green-600 transition duration-300">
+                                       hover:bg-green-600 transition duration-300">
                             Confirmar Pago
                         </button>
-
                         <span *ngIf="r.estado !== 'PENDIENTE'" class="text-xs text-gray-400 font-normal">
                             (N/A)
                         </span>
-
                     </td>
                 </tr>
             </tbody>
@@ -91,13 +91,44 @@
     (onCancel)="cerrarModalConfirmacion()">
 </app-modal-confirmacion>
 
-<app-modal-confirmacion 
-    [visible]="showInfoModal"
-    [titulo]="modalInfoTitulo"
-    [mensaje]="modalInfoMensaje"
-    confirmButtonText="Aceptar"
-    confirmButtonColor="blue"
-    [showCancelButton]="false" 
-    (onConfirm)="cerrarModalInfo()"
-    (onCancel)="cerrarModalInfo()">
-</app-modal-confirmacion>
+<div
+     class="fixed top-6 right-8 ring-1 ring-gray-200 z-50 max-w-sm w-full bg-white shadow-xl rounded-lg pointer-events-auto overflow-hidden
+           transform transition-all duration-300 ease-out"
+     [ngClass]="{
+        'opacity-100 translate-x-0': showNotification,
+        'opacity-0 translate-x-full': !showNotification 
+     }">
+    
+    <div class="p-4">
+        <div class="flex items-start">
+            
+            <div class="flex-shrink-0">
+                <svg *ngIf="notificationType === 'success'" class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg *ngIf="notificationType === 'error'" class="h-6 w-6 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            
+            <div class="ml-3 w-0 flex-1 pt-0.5">
+                <p class="text-sm font-medium text-gray-900">
+                    {{ notificationTitle }}
+                </p>
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ notificationMessage }}
+                </p>
+            </div>
+            
+            <div class="ml-4 flex-shrink-0 flex">
+                <button (click)="showNotification = false" 
+                        class="inline-flex text-gray-400 rounded-md bg-white hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <span class="sr-only">Close</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
