@@ -1,5 +1,6 @@
 package com.inkatravel.service;
 
+import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
 import com.inkatravel.dto.ReservaResponseDTO;
 import com.inkatravel.dto.UpdateRoleRequestDTO; // <-- IMPORTAR
 import com.inkatravel.dto.UsuarioResponseDTO;
@@ -43,4 +44,6 @@ public interface AdminService {
      * @param id El ID del usuario a reactivar.
      */
     void habilitarUsuario(Integer id) throws Exception;
+
+    List<PaqueteTuristicoResponseDTO> obtenerTodosLosPaquetes();
 }

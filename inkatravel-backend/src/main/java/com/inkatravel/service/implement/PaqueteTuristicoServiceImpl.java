@@ -52,39 +52,32 @@ public class PaqueteTuristicoServiceImpl implements PaqueteTuristicoService {
     }
 
     /**
-     * (NUEVO) Implementación de RF-05
-     * Esta es la lógica "simple" de filtros.
+     * (¡ACTUALIZADO!)
+     * Ahora SÓLO devuelve paquetes con disponibilidad = true
      */
     @Override
     public List<PaqueteTuristico> obtenerPaquetesFiltrados(String region, String categoria, BigDecimal precioMin, BigDecimal precioMax) {
 
-        // --- Lógica de Filtros ---
-        // (Por simplicidad, solo aplicamos un filtro a la vez si se proveen varios,
-        // o podemos usar los 'Between' si ambos precios están)
+        boolean disponibilidad = true;
 
-        // Caso 1: Hay filtro de Rango de Precio
         if (precioMin != null && precioMax != null) {
-            return paqueteRepository.findByPrecioBetween(precioMin, precioMax);
+            return paqueteRepository.findByPrecioBetweenAndDisponibilidad(precioMin, precioMax, disponibilidad);
         }
-        // Caso 2: Solo Precio Mínimo
         if (precioMin != null) {
-            return paqueteRepository.findByPrecioGreaterThanEqual(precioMin);
+            return paqueteRepository.findByPrecioGreaterThanEqualAndDisponibilidad(precioMin, disponibilidad);
         }
-        // Caso 3: Solo Precio Máximo
         if (precioMax != null) {
-            return paqueteRepository.findByPrecioLessThanEqual(precioMax);
+            return paqueteRepository.findByPrecioLessThanEqualAndDisponibilidad(precioMax, disponibilidad);
         }
-        // Caso 4: Solo Región
         if (region != null) {
-            return paqueteRepository.findByRegion(region);
+            return paqueteRepository.findByRegionAndDisponibilidad(region, disponibilidad);
         }
-        // Caso 5: Solo Categoría
         if (categoria != null) {
-            return paqueteRepository.findByCategoria(categoria);
+            return paqueteRepository.findByCategoriaAndDisponibilidad(categoria, disponibilidad);
         }
 
-        // Caso 6: No hay filtros, devolver todo
-        return paqueteRepository.findAll();
+        // Si no hay filtros, devuelve TODOS los DISPONIBLES
+        return paqueteRepository.findAllByDisponibilidad(disponibilidad);
     }
 
     @Override
@@ -135,12 +128,23 @@ public class PaqueteTuristicoServiceImpl implements PaqueteTuristicoService {
 
     @Override
     public void eliminarPaquete(Integer id) throws Exception {
-        // 1. Verificamos que el paquete exista
+
+        // --- 1. VERIFICACIÓN DE INTEGRIDAD (¡NUEVO!) ---
+        // Verificamos si alguna reserva está usando este paquete
+        boolean tieneReservas = reservaRepository.existsByPaqueteTuristicoId(id);
+
+        if (tieneReservas) {
+            // Si tiene reservas, lanzamos un error amigable
+            throw new Exception("No se puede eliminar: El paquete ya tiene reservas asociadas.");
+        }
+
+        // --- 2. VERIFICAR QUE EL PAQUETE EXISTA (Buena práctica) ---
+        // (Si no tiene reservas, verificamos que exista antes de borrar)
         PaqueteTuristico paquete = paqueteRepository.findById(id)
                 .orElseThrow(() -> new Exception("Paquete no encontrado con ID: " + id));
 
-        // 2. Si existe, lo eliminamos
-        paqueteRepository.deleteById(id);
+        // 3. Si pasa ambas verificaciones, lo eliminamos
+        paqueteRepository.delete(paquete);
     }
 
     /**
@@ -169,8 +173,7 @@ public class PaqueteTuristicoServiceImpl implements PaqueteTuristicoService {
         Integer idExcluir = ultimaReserva.getPaqueteTuristico().getId();
 
         // 5. Buscar otros paquetes (máx 5) de esa región, excluyendo el que ya compró
-        List<PaqueteTuristico> recomendados = paqueteRepository.findTop5ByRegionAndIdNot(region, idExcluir);
-
+        List<PaqueteTuristico> recomendados = paqueteRepository.findTop5ByRegionAndIdNotAndDisponibilidad(region, idExcluir, true);
         // 6. Convertir a DTO (para evitar el error 403) y devolver
         return recomendados.stream()
                 .map(PaqueteTuristicoResponseDTO::new)

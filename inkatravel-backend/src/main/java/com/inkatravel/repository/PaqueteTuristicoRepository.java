@@ -34,4 +34,21 @@ public interface PaqueteTuristicoRepository extends JpaRepository<PaqueteTuristi
      * EXCLUYENDO el ID del paquete que el usuario ya compró.
      */
     List<PaqueteTuristico> findTop5ByRegionAndIdNot(String region, Integer id);
+
+    // --- ¡NUEVOS MÉTODOS PARA EL CATÁLOGO PÚBLICO! ---
+    // (Solo devuelven los que están disponibles)
+
+    List<PaqueteTuristico> findAllByDisponibilidad(boolean disponibilidad);
+
+    List<PaqueteTuristico> findByRegionAndDisponibilidad(String region, boolean disponibilidad);
+
+    List<PaqueteTuristico> findByCategoriaAndDisponibilidad(String categoria, boolean disponibilidad);
+
+    List<PaqueteTuristico> findByPrecioLessThanEqualAndDisponibilidad(BigDecimal precioMax, boolean disponibilidad);
+
+    List<PaqueteTuristico> findByPrecioGreaterThanEqualAndDisponibilidad(BigDecimal precioMin, boolean disponibilidad);
+
+    List<PaqueteTuristico> findByPrecioBetweenAndDisponibilidad(BigDecimal precioMin, BigDecimal precioMax, boolean disponibilidad);
+
+    List<PaqueteTuristico> findTop5ByRegionAndIdNotAndDisponibilidad(String region, Integer id, boolean disponibilidad);
 }

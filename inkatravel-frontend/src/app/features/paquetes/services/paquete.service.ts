@@ -62,4 +62,30 @@ export class PaqueteService {
     // el token automáticamente a todas las peticiones protegidas.
     return this.http.get<PaqueteTuristicoResponseDTO[]>(`${this.baseUrl}/recomendados`);
   }
+  // --- ¡NUEVOS MÉTODOS DE ADMIN! (RF-12) ---
+
+  /**
+   * (RF-12) Crea un nuevo paquete. (Requiere token Admin)
+   * Llama a: POST /api/paquetes
+   */
+  crearPaquete(paqueteData: any): Observable<PaqueteTuristicoResponseDTO> {
+    // (Usamos 'any' para el DTO de envío, pero podríamos crear una interfaz)
+    return this.http.post<PaqueteTuristicoResponseDTO>(this.baseUrl, paqueteData);
+  }
+
+  /**
+   * (RF-12) Actualiza un paquete existente. (Requiere token Admin)
+   * Llama a: PUT /api/paquetes/{id}
+   */
+  actualizarPaquete(id: number, paqueteData: any): Observable<PaqueteTuristicoResponseDTO> {
+    return this.http.put<PaqueteTuristicoResponseDTO>(`${this.baseUrl}/${id}`, paqueteData);
+  }
+
+  /**
+   * (RF-12) Elimina un paquete. (Requiere token Admin)
+   * Llama a: DELETE /api/paquetes/{id}
+   */
+  eliminarPaquete(id: number): Observable<string> { // Ahora devuelve un string
+    return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
+  }
 }

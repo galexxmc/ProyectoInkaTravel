@@ -18,4 +18,9 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
      * Busca la reserva CONFIRMADA más reciente de un usuario.
      */
     Optional<Reserva> findFirstByUsuarioAndEstadoOrderByFechaReservaDesc(Usuario usuario, EstadoReserva estado);
+    /**
+     * (NUEVO) Verifica si existe al menos una reserva asociada a un ID de paquete.
+     * Es más eficiente que contar (count) o traer la lista (find).
+     */
+    boolean existsByPaqueteTuristicoId(Integer paqueteId);
 }

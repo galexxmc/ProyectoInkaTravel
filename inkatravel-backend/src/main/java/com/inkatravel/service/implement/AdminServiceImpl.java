@@ -1,9 +1,11 @@
 package com.inkatravel.service.implement;
 
+import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
 import com.inkatravel.dto.ReservaResponseDTO;
 import com.inkatravel.dto.UpdateRoleRequestDTO; // <-- IMPORTAR
 import com.inkatravel.dto.UsuarioResponseDTO;
 import com.inkatravel.model.Usuario; // <-- IMPORTAR
+import com.inkatravel.repository.PaqueteTuristicoRepository;
 import com.inkatravel.repository.ReservaRepository;
 import com.inkatravel.repository.UsuarioRepository;
 import com.inkatravel.service.AdminService;
@@ -18,12 +20,15 @@ import java.util.stream.Collectors;
 @Service
 public class AdminServiceImpl implements AdminService {
 
+    private final PaqueteTuristicoRepository paqueteRepository;
+
     private final UsuarioRepository usuarioRepository;
     private final ReservaRepository reservaRepository;
 
-    public AdminServiceImpl(UsuarioRepository usuarioRepository, ReservaRepository reservaRepository) {
+    public AdminServiceImpl(UsuarioRepository usuarioRepository, ReservaRepository reservaRepository, PaqueteTuristicoRepository paqueteRepository) {
         this.usuarioRepository = usuarioRepository;
         this.reservaRepository = reservaRepository;
+        this.paqueteRepository = paqueteRepository; // <-- Añadir
     }
 
     @Override
@@ -84,5 +89,16 @@ public class AdminServiceImpl implements AdminService {
 
         usuario.setActivo(true); // Lo "reactiva"
         usuarioRepository.save(usuario);
+    }
+
+    /**
+     * (NUEVO - RF-12) Obtiene TODOS los paquetes (activos e inactivos)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaqueteTuristicoResponseDTO> obtenerTodosLosPaquetes() {
+        return paqueteRepository.findAll().stream()
+                .map(PaqueteTuristicoResponseDTO::new)
+                .collect(Collectors.toList());
     }
 }

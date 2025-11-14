@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { UsuarioResponseDTO } from '../../../core/interfaces/usuario.interface';
 import { ReservaResponseDTO } from '../../../core/interfaces/reserva.interface';
 import { PagoResponseDTO } from '../../../core/interfaces/pago.interface';
+import { PaqueteTuristicoResponseDTO } from '../../../core/interfaces/paquete.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +51,10 @@ export class AdminService {
   /** (RF-09 Manual) Confirma un pago pendiente */
   confirmarPago(reservaId: number): Observable<PagoResponseDTO> {
     return this.http.post<PagoResponseDTO>(`${this.baseUrl}/reservas/${reservaId}/confirmar`, {});
+  }
+
+  /** (NUEVO) Obtiene TODOS los paquetes (activos e inactivos) */
+  obtenerTodosLosPaquetes(): Observable<PaqueteTuristicoResponseDTO[]> {
+    return this.http.get<PaqueteTuristicoResponseDTO[]>(`${this.baseUrl}/paquetes`);
   }
 }

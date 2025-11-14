@@ -1,7 +1,6 @@
 package com.inkatravel.controller;
 
-import com.inkatravel.dto.ReservaResponseDTO;
-import com.inkatravel.dto.UsuarioResponseDTO;
+import com.inkatravel.dto.*;
 import com.inkatravel.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,15 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.inkatravel.dto.PagoResponseDTO; // <-- IMPORTAR
-
 import com.inkatravel.model.Pago; // <-- IMPORTAR
 import com.inkatravel.service.PagoService; // <-- IMPORTAR
 import org.springframework.http.HttpStatus; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.PathVariable; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.PostMapping; // <-- IMPORTAR
 
-import com.inkatravel.dto.UpdateRoleRequestDTO; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.DeleteMapping; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.PutMapping; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.RequestBody; // <-- IMPORTAR
@@ -126,5 +122,14 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    /**
+     * (NUEVO) Endpoint para RF-12: Ver todos los paquetes (activos e inactivos).
+     */
+    @GetMapping("/paquetes")
+    public ResponseEntity<List<PaqueteTuristicoResponseDTO>> obtenerTodosLosPaquetes() {
+        List<PaqueteTuristicoResponseDTO> paquetes = adminService.obtenerTodosLosPaquetes();
+        return ResponseEntity.ok(paquetes);
     }
 }
