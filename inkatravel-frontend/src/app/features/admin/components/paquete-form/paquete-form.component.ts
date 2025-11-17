@@ -28,17 +28,28 @@ export class PaqueteFormComponent implements OnInit {
 
   // --- Estado del Componente ---
   paqueteForm!: FormGroup;
-  isEditMode: boolean = false;
-  paqueteId: number | null = null;
-  isLoading: boolean = false;
   errorMessage: string = ''; // Para errores del formulario
-  pageTitle: string = 'Crear Nuevo Paquete';
 
-  // --- ¡NUEVO! Notificación "Toast" (Éxito) ---
+  selectedFile: File | null = null;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  currentImageUrl: string | null = null;
+  
+  // --- ¡CORREGIDO! Lógica de carga movida aquí arriba ---
+  // Leemos el snapshot de la ruta INMEDIATAMENTE
+  paqueteId: number | null = Number(this.route.snapshot.paramMap.get('id')) || null;
+  isEditMode: boolean = !!this.paqueteId; // true si paqueteId no es null/0
+  pageTitle: string = this.isEditMode ? 'Editar Paquete' : 'Crear Nuevo Paquete';
+  
+  // ¡LA CLAVE! Se inicia en 'true' SI es modo editar.
+  public isPageLoading: boolean = this.isEditMode; 
+  public isSubmitting: boolean = false;  // Para el envío del formulario (botón "Guardando...")
+
+
+  // --- Notificación "Toast" (Éxito) ---
   showNotification: boolean = false;
   notificationTitle: string = '¡Éxito!';
   notificationMessage: string = '';
-  notificationType: 'success' | 'error' = 'success'; // (Solo usamos 'success' aquí)
+  notificationType: 'success' | 'error' = 'success';
   private notificationTimer: any;
 
   constructor() { }
@@ -60,22 +71,21 @@ export class PaqueteFormComponent implements OnInit {
     });
 
     // 2. Comprobar si estamos en modo "Editar"
-    this.paqueteId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.paqueteId) {
-      this.isEditMode = true;
-      this.pageTitle = 'Editar Paquete';
-      this.isLoading = true;
+    // (La lógica ya se ejecutó arriba, solo necesitamos cargar los datos)
+    
+    if (this.isEditMode && this.paqueteId) {
+      // isPageLoading ya es 'true', así que el loader se está mostrando
       
-      // 3. Si es modo "Editar", cargar los datos del paquete
+      // 3. Cargar los datos del paquete
       this.paqueteService.obtenerDetallePaquete(this.paqueteId).subscribe({
         next: (data) => {
           // Rellenamos el formulario con los datos
           this.paqueteForm.patchValue(data.paquete); 
-          this.isLoading = false;
+          this.isPageLoading = false; // <--- Ocultamos el loader
         },
         error: (err) => {
           this.errorMessage = 'No se pudo cargar el paquete para editar.';
-          this.isLoading = false;
+          this.isPageLoading = false; // <--- Ocultamos el loader
         }
       });
     }
@@ -109,7 +119,7 @@ export class PaqueteFormComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isSubmitting = true; 
     this.errorMessage = '';
 
     if (this.isEditMode && this.paqueteId) {
@@ -130,17 +140,12 @@ export class PaqueteFormComponent implements OnInit {
   // --- Funciones de Ayuda (ACTUALIZADAS) ---
 
   private handleSuccess(message: string): void {
-    this.isLoading = false;
-    this.mostrarNotificacion('¡Éxito!', message, 'success'); // Muestra el Toast
-    
-    // Vuelve a la tabla de gestión
-    setTimeout(() => {
-      this.router.navigate(['/admin/paquetes']);
-    }, 2000); // Espera 2 seg para que se vea el toast
+      this.isSubmitting = false; 
+      this.mostrarNotificacion('¡Éxito!', message, 'success'); // Muestra el Toast
   }
 
   private handleError(err: any): void {
-    this.isLoading = false;
+    this.isSubmitting = false; 
     // Muestra el error en el formulario
     this.errorMessage = err.error || 'Ocurrió un error al guardar el paquete.';
   }
