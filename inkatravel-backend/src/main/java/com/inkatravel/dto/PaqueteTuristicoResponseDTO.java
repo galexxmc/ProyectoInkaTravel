@@ -1,13 +1,10 @@
+// En: com.inkatravel.dto/PaqueteTuristicoResponseDTO.java
 package com.inkatravel.dto;
 
 import com.inkatravel.model.PaqueteTuristico;
 import lombok.Data;
 import java.math.BigDecimal;
 
-/**
- * DTO "plano" para devolver Paquetes Turísticos.
- * Evita el Set<Reserva> que causa el error LAZY.
- */
 @Data
 public class PaqueteTuristicoResponseDTO {
 
@@ -22,7 +19,10 @@ public class PaqueteTuristicoResponseDTO {
 
     private BigDecimal latitud;
     private BigDecimal longitud;
-    // No incluimos el Set<Reserva>
+
+    // --- NUEVO CAMPO ---
+    private String imagenUrl;
+    // --- FIN NUEVO CAMPO ---
 
     // Constructor que mapea la Entidad al DTO
     public PaqueteTuristicoResponseDTO(PaqueteTuristico paquete) {
@@ -34,8 +34,11 @@ public class PaqueteTuristicoResponseDTO {
         this.categoria = paquete.getCategoria();
         this.itinerario = paquete.getItinerario();
         this.disponibilidad = paquete.isDisponibilidad();
-
         this.latitud = paquete.getLatitud();
         this.longitud = paquete.getLongitud();
+
+        // --- NUEVA LÍNEA EN EL CONSTRUCTOR ---
+        this.imagenUrl = paquete.getImagenUrl();
+        // --- FIN NUEVA LÍNEA ---
     }
 }

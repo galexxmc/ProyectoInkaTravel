@@ -1,3 +1,4 @@
+// En: com.inkatravel.model/PaqueteTuristico.java
 package com.inkatravel.model;
 
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ public class PaqueteTuristico {
     @Column(nullable = false)
     private String nombre;
 
-    @Lob // Para campos de texto largo (TEXT en MySQL)
+    @Lob
     private String descripcion;
 
     @Column(nullable = false)
@@ -34,7 +35,7 @@ public class PaqueteTuristico {
     @Lob
     private String itinerario;
 
-    private boolean disponibilidad = true; // Valor por defecto
+    private boolean disponibilidad = true;
 
     @Column(name = "fecha_inicio")
     private LocalDateTime fechaInicio;
@@ -42,11 +43,16 @@ public class PaqueteTuristico {
     @Column(name = "fecha_fin")
     private LocalDateTime fechaFin;
 
-    @Column(precision = 10, scale = 7) // Coincide con el DECIMAL(10, 7)
+    @Column(precision = 10, scale = 7)
     private BigDecimal latitud;
 
     @Column(precision = 10, scale = 7)
     private BigDecimal longitud;
+
+    // --- NUEVO CAMPO ---
+    @Column(name = "imagen_url")
+    private String imagenUrl;
+    // --- FIN NUEVO CAMPO ---
 
     @OneToMany(mappedBy = "paqueteTuristico")
     private Set<Reserva> reservas;

@@ -64,28 +64,30 @@ export class PaqueteService {
   }
   // --- ¡NUEVOS MÉTODOS DE ADMIN! (RF-12) ---
 
-  /**
-   * (RF-12) Crea un nuevo paquete. (Requiere token Admin)
-   * Llama a: POST /api/paquetes
-   */
-  crearPaquete(paqueteData: any): Observable<PaqueteTuristicoResponseDTO> {
-    // (Usamos 'any' para el DTO de envío, pero podríamos crear una interfaz)
-    return this.http.post<PaqueteTuristicoResponseDTO>(this.baseUrl, paqueteData);
-  }
+/**
+   * (RF-12) Crea un nuevo paquete. (Requiere token Admin)
+    * Acepta FormData, que contiene el JSON y el archivo de imagen.
+   * Llama a: POST /api/paquetes (con multipart/form-data)
+   */
+  crearPaquete(paqueteFormData: FormData): Observable<PaqueteTuristicoResponseDTO> {
+    // HttpClient detecta FormData y usa automáticamente el encabezado Content-Type: multipart/form-data
+    return this.http.post<PaqueteTuristicoResponseDTO>(this.baseUrl, paqueteFormData);
+  }
 
-  /**
-   * (RF-12) Actualiza un paquete existente. (Requiere token Admin)
-   * Llama a: PUT /api/paquetes/{id}
-   */
-  actualizarPaquete(id: number, paqueteData: any): Observable<PaqueteTuristicoResponseDTO> {
-    return this.http.put<PaqueteTuristicoResponseDTO>(`${this.baseUrl}/${id}`, paqueteData);
-  }
+  /**
+   * (RF-12) Actualiza un paquete existente. (Requiere token Admin)
+    * Acepta FormData, que contiene el JSON y opcionalmente el archivo de imagen.
+   * Llama a: PUT /api/paquetes/{id} (con multipart/form-data)
+   */
+  actualizarPaquete(id: number, paqueteFormData: FormData): Observable<PaqueteTuristicoResponseDTO> {
+    return this.http.put<PaqueteTuristicoResponseDTO>(`${this.baseUrl}/${id}`, paqueteFormData);
+  }
 
-  /**
-   * (RF-12) Elimina un paquete. (Requiere token Admin)
-   * Llama a: DELETE /api/paquetes/{id}
-   */
-  eliminarPaquete(id: number): Observable<string> { // Ahora devuelve un string
-    return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
-  }
+  /**
+   * (RF-12) Elimina un paquete. (Requiere token Admin)
+   * Llama a: DELETE /api/paquetes/{id}
+   */
+  eliminarPaquete(id: number): Observable<string> {
+    return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
+  }
 }

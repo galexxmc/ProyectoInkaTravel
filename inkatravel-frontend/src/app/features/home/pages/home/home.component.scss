@@ -1,0 +1,17 @@
+// En: home.component.scss
+
+// 1. Definición de la animación de desplazamiento
+@keyframes scroll-sponsors {
+    from {
+        transform: translateX(0);
+    }
+    // Mueve la lista el 50% de su ancho total (que es el ancho de la lista original)
+    to {
+        transform: translateX(-50%); 
+    }
+}
+
+// 2. Clase para aplicar la animación
+.animate-scroll {
+    animation: scroll-sponsors 10s linear infinite; /* 30s es la duración, linear es velocidad constante, infinite es bucle */
+}

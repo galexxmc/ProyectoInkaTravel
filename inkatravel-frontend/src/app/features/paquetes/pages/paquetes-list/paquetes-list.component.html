@@ -1,4 +1,4 @@
-<div class="catalogo-container">
+<div class="catalogo-container my-25">
     <h1 class="text-4xl font-bold text-gray-800 mb-4">Descubre tu Próxima Aventura</h1>
     <p class="text-lg text-gray-600 mb-8">Explora nuestro catálogo de destinos inolvidables en el Perú.</p>
     <div *ngIf="isLoading" 
@@ -22,10 +22,19 @@
         <div *ngFor="let paquete of paquetes" 
              class="paquete-card bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transition duration-300 hover:shadow-xl">
             
-            <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
-                (Imagen del Paquete)
-            </div>
+        <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden">
             
+            <img *ngIf="paquete.imagenUrl" 
+                [src]="'http://localhost:8080/uploads/' + paquete.imagenUrl" 
+                alt="{{ paquete.nombre }}"
+                class="w-full h-full object-cover">
+            
+            <div *ngIf="!paquete.imagenUrl" class="p-4 text-center">
+                
+                <p class="text-sm">Imagen no disponible</p>
+            </div>
+        </div>
+                    
             <div class="paquete-info p-4 flex-grow">
                 <h3 class="text-xl font-semibold text-gray-800 mb-1">{{ paquete.nombre }}</h3>
                 <p class="text-sm text-gray-500 mb-3">{{ paquete.region }} - {{ paquete.categoria }}</p>

@@ -1,6 +1,8 @@
+// En: src/app/core/interfaces/paquete.interface.ts
+
 import { OpenMeteoResponseDTO } from "./clima.interface";
 
-// DTO del paquete (de la BD)
+// DTO del paquete (de la BD) - CORREGIDO
 export interface PaqueteTuristicoResponseDTO {
     id: number;
     nombre: string;
@@ -12,6 +14,10 @@ export interface PaqueteTuristicoResponseDTO {
     disponibilidad: boolean;
     latitud: number;
     longitud: number;
+    
+    // --- ¡SOLUCIÓN! AÑADIR IMAGEN URL ---
+    imagenUrl: string | null; // El backend envía el nombre/ruta de la imagen
+    // ------------------------------------
 }
 
 // DTO "Contenedor" para la vista de detalle

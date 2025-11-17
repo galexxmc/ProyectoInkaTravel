@@ -1,4 +1,4 @@
-<div class="detalle-container max-w-6xl mx-auto">
+<div class="detalle-container max-w-6xl mx-auto my-25">
 
     <div *ngIf="isLoading" 
         class="fixed inset-0 z-50 flex items-center justify-center ">
@@ -18,9 +18,17 @@
 
     <div *ngIf="detalle && !isLoading" class="detalle-content bg-white shadow-lg rounded-lg overflow-hidden">
         
-        <div class="h-64 bg-gray-200 flex items-center justify-center text-gray-400">
-            (Imagen principal del paquete)
+    <div class="h-64 bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden">
+        
+        <img *ngIf="detalle.paquete.imagenUrl" 
+            [src]="'http://localhost:8080/uploads/' + detalle.paquete.imagenUrl" 
+            alt="{{ detalle.paquete.nombre }}"
+            class="w-full h-full object-cover">
+        
+        <div *ngIf="!detalle.paquete.imagenUrl" class="text-xl p-4 text-center">
+                    <p class="mt-2 text-base">Imagen Principal No Disponible</p>
         </div>
+    </div>
 
         <div class="detalle-header p-6 border-b border-gray-200">
             <h1 class="text-4xl font-bold text-gray-900">{{ detalle.paquete.nombre }}</h1>

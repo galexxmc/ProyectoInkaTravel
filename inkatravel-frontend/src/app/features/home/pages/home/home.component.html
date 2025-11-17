@@ -1,1 +1,121 @@
-<p>home works!</p>
+<div class="home-container mt-20">
+
+    <div class="slider-container relative w-full h-[40vh] overflow-hidden"> 
+        
+        <div *ngFor="let slide of slides; let i = index" 
+             class="absolute inset-0 transition duration-700 ease-in-out bg-cover bg-center flex items-center justify-center text-white"
+             [style.backgroundImage]="'url(' + slides[i].image + ')'"
+             
+             [ngClass]="{
+                 'opacity-100 translate-x-0 z-10': i === currentSlideIndex,
+                 'opacity-0 z-0': i !== currentSlideIndex,
+                 'translate-x-full': (i > currentSlideIndex || (i === 0 && currentSlideIndex === slides.length - 1)) && slideDirection === 'left',
+                 '-translate-x-full': i < currentSlideIndex && slideDirection === 'right'
+             }"> 
+            
+            <div class="text-center p-8 max-w-4xl mx-auto bg-white backdrop-blur-md rounded-2xl border-2 border-gray-200"> 
+                
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight text-blue-900 stroke-text-blue">
+                    {{ slide.title }}
+                </h2>
+                <p class="text-lg md:text-xl mb-6 italic text-black">
+                    {{ slide.subtitle }}
+                </p>
+                
+                <a [routerLink]="slides[i].link"
+                   class="inline-block bg-yellow-400 text-black px-5 py-2 rounded-xl font-bold text-md uppercase  
+                          border-2 border-white hover:bg-blue-900 transition duration-300 transform hover:scale-103 hover:text-white">
+                    {{ slide.cta }}
+                </a>
+            </div>
+        </div>
+
+        <button (click)="prevSlide()" 
+                class="absolute left-8 top-1/2 transform -translate-y-1/2 p-3 bg-white/20 border-2 border-blue-900  text-blue-900 rounded-full 
+                       transition duration-300 z-20 hover:bg-white/40">
+            &#10094;
+        </button>
+        <button (click)="nextSlide()" 
+                class="absolute right-8 top-1/2 transform -translate-y-1/2 p-3 bg-white/20 border-2 border-blue-900  text-blue-900  rounded-full 
+                       transition duration-300 z-20 hover:bg-white/40">
+            &#10095;
+        </button>
+    </div>
+
+    <div class="max-w-8xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-12 text-center">
+            Paquetes Premium Destacados
+        </h2>
+
+        <div *ngIf="isLoading" class="text-center p-12">
+            <p class="text-lg text-gray-600">Cargando la aventura...</p>
+        </div>
+        <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
+            {{ errorMessage }}
+        </div>
+
+        <div *ngIf="!isLoading && paquetesDestacados.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <div *ngFor="let paquete of paquetesDestacados"
+                 class="paquete-card bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col cursor-pointer
+                        transition duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                
+                <div class="h-56 bg-gray-100 flex items-center justify-center text-gray-400 overflow-hidden">
+                    <img *ngIf="paquete.imagenUrl" 
+                         [src]="'http://localhost:8080/uploads/' + paquete.imagenUrl" 
+                         alt="{{ paquete.nombre }}"
+                         class="w-full h-full object-cover">
+                    <div *ngIf="!paquete.imagenUrl" class="p-4 text-center">
+                        <p class="text-sm">Imagen no disponible</p>
+                    </div>
+                </div>
+
+                <div class="paquete-info p-6 flex-grow">
+                    <span class="text-sm font-semibold text-indigo-500 uppercase tracking-widest">{{ paquete.region }} - {{ paquete.categoria }}</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1 mb-2">{{ paquete.nombre }}</h3>
+                    <p class="descripcion text-gray-600 text-base line-clamp-3">
+                        {{ paquete.descripcion | slice:0:100 }}...
+                    </p>
+                </div>
+                
+                <div class="paquete-footer p-6 bg-white border-t flex justify-between items-center">
+                    <span class="precio text-3xl font-extrabold text-green-600">S/ {{ paquete.precio }}</span>
+                    <a [routerLink]="['/paquetes', paquete.id]" 
+                       class="bg-blue-900 text-white px-6 py-2 rounded-full font-semibold
+                              hover:bg-blue-900 transition duration-300">
+                        Ver Detalle
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center mt-8">
+        Trabajamos con los mejores
+    </h2>
+
+    <div class="bg-white py-4 border-t border-gray-100 rounded-xl">
+        <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="relative overflow-hidden w-full">
+                
+                <div class="logos-slide flex whitespace-nowrap animate-scroll">
+                    
+                    <div *ngFor="let sponsor of sponsors" 
+                         class="sponsor-item flex-shrink-0 w-52 p-4 flex items-center justify-center"> 
+                         <img [src]="sponsor.logo" [alt]="sponsor.name" 
+                               class="w-3/4 h-auto opacity-60 hover:opacity-100 transition duration-500 filter grayscale hover:grayscale-0"> 
+                    </div>
+
+                    <div *ngFor="let sponsor of sponsors" 
+                         class="sponsor-item flex-shrink-0 w-52 p-4 flex items-center justify-center"> 
+                         <img [src]="sponsor.logo" [alt]="sponsor.name" 
+                               class="w-3/4 h-auto opacity-60 hover:opacity-100 transition duration-500 filter grayscale hover:grayscale-0"> 
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

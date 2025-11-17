@@ -102,6 +102,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/pagos/webhook").permitAll()
                         .requestMatchers("/api/pagos/webhook-suscripcion").permitAll()
 
+                        // --- ¡SOLUCIÓN! Hacemos públicas las imágenes ---
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+
                         // Hacemos públicas las URL de redirección de MP
                         .requestMatchers("/pago-exitoso").permitAll()
                         .requestMatchers("/pago-fallido").permitAll()

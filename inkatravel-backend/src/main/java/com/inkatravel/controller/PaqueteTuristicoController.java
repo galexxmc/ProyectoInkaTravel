@@ -1,20 +1,21 @@
 package com.inkatravel.controller;
 
-import com.inkatravel.dto.PaqueteTuristicoResponseDTO; // <-- IMPORTAR
+import com.fasterxml.jackson.databind.ObjectMapper; // NUEVO
+import com.inkatravel.dto.PaqueteDetalleResponseDTO;
+import com.inkatravel.dto.PaqueteTuristicoRequestDTO; // NUEVO
+import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
 import com.inkatravel.model.PaqueteTuristico;
 import com.inkatravel.service.PaqueteTuristicoService;
+import com.inkatravel.service.StorageService; // NUEVO
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; // NUEVO
 
-import com.inkatravel.dto.PaqueteDetalleResponseDTO;
-
-import org.springframework.web.bind.annotation.RequestParam; // <-- IMPORTAR
-import java.math.BigDecimal; // <-- IMPORTAR
-
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors; // <-- IMPORTAR PARA LOS GET
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/paquetes")
@@ -22,18 +23,20 @@ import java.util.stream.Collectors; // <-- IMPORTAR PARA LOS GET
 public class PaqueteTuristicoController {
 
     private final PaqueteTuristicoService paqueteService;
+    private final StorageService storageService; // INYECCIÓN
+    private final ObjectMapper objectMapper;     // INYECCIÓN
 
-    public PaqueteTuristicoController(PaqueteTuristicoService paqueteService) {
+    // Constructor para Inyección de Dependencias
+    public PaqueteTuristicoController(PaqueteTuristicoService paqueteService,
+                                      StorageService storageService,
+                                      ObjectMapper objectMapper) {
         this.paqueteService = paqueteService;
+        this.storageService = storageService;
+        this.objectMapper = objectMapper;
     }
 
-    /**
-     * (ACTUALIZADO - RF-03 y RF-05)
-     * Endpoint para obtener el catálogo, ahora con filtros.
-     * Escuchará en: GET http://localhost:8080/api/paquetes
-     * Y también en: GET http://localhost:8080/api/paquetes?region=Cusco
-     * O en: GET http://localhost:8080/api/paquetes?precioMin=100&precioMax=500
-     */
+    // --- MÉTODOS GET (Sin cambios en su lógica) ---
+
     @GetMapping
     public ResponseEntity<List<PaqueteTuristicoResponseDTO>> obtenerPaquetesFiltrados(
             @RequestParam(required = false) String region,
@@ -41,26 +44,16 @@ public class PaqueteTuristicoController {
             @RequestParam(required = false) BigDecimal precioMin,
             @RequestParam(required = false) BigDecimal precioMax
     ) {
-        // 1. Llama al servicio con los filtros (que pueden ser 'null')
         List<PaqueteTuristico> paquetes = paqueteService.obtenerPaquetesFiltrados(region, categoria, precioMin, precioMax);
-
-        // 2. Convierte la lista de Entidades a DTOs (para evitar el error 403)
         List<PaqueteTuristicoResponseDTO> paquetesDTO = paquetes.stream()
                 .map(PaqueteTuristicoResponseDTO::new)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(paquetesDTO);
     }
 
-    /**
-     * (ACTUALIZADO - RF-04 y RF-14)
-     * Endpoint para detalle de paquete (con clima).
-     * Escuchará en: GET http://localhost:8080/api/paquetes/1
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPaquetePorId(@PathVariable Integer id) {
         try {
-            // El servicio ahora devuelve el DTO contenedor
             PaqueteDetalleResponseDTO detalle = paqueteService.obtenerPaquetePorId(id);
             return ResponseEntity.ok(detalle);
         } catch (Exception e) {
@@ -68,33 +61,65 @@ public class PaqueteTuristicoController {
         }
     }
 
-    /**
-     * POST /api/paquetes (Actualizado para usar el servicio que devuelve DTO)
-     */
-    @PostMapping
-    public ResponseEntity<PaqueteTuristicoResponseDTO> crearPaquete(@RequestBody PaqueteTuristico paquete) {
-        // El servicio ya devuelve el DTO
-        PaqueteTuristicoResponseDTO nuevoPaqueteDTO = paqueteService.crearPaquete(paquete);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPaqueteDTO);
+    // --- MÉTODO POST (Modificado para archivos) ---
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<PaqueteTuristicoResponseDTO> crearPaquete(
+            @RequestPart("paquete") String paqueteDTOString,
+            @RequestPart("imagen") MultipartFile imagenFile
+    ) {
+        try {
+            // 1. Deserializar JSON (String) a DTO de Solicitud
+            PaqueteTuristicoRequestDTO paqueteDTO = objectMapper.readValue(paqueteDTOString, PaqueteTuristicoRequestDTO.class);
+
+            // 2. Guardar la imagen y obtener su nombre/ruta
+            String nombreImagen = storageService.guardarArchivo(imagenFile);
+
+            // 3. Asignar el nombre al DTO
+            paqueteDTO.setImagenUrl(nombreImagen);
+
+            // 4. Llamar al servicio
+            PaqueteTuristicoResponseDTO nuevoPaqueteDTO = paqueteService.crearPaquete(paqueteDTO);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPaqueteDTO);
+
+        } catch (Exception e) {
+            System.err.println("Error al crear paquete: " + e.getMessage()); // Log para depuración
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
-    /**
-     * PUT /api/paquetes/{id} (Actualizado para usar el servicio que devuelve DTO)
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarPaquete(@PathVariable Integer id, @RequestBody PaqueteTuristico paqueteDetalles) {
+    // --- MÉTODO PUT (Modificado para archivos) ---
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> actualizarPaquete(
+            @PathVariable Integer id,
+            @RequestPart("paquete") String paqueteDTOString,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagenFile // Imagen es opcional
+    ) {
         try {
-            // El servicio ya devuelve el DTO
+            // 1. Deserializar JSON (String) a DTO de Solicitud
+            PaqueteTuristicoRequestDTO paqueteDetalles = objectMapper.readValue(paqueteDTOString, PaqueteTuristicoRequestDTO.class);
+            paqueteDetalles.setId(id);
+
+            // 2. Manejo de la imagen: Si viene un archivo, lo guardamos y asignamos la URL.
+            if (imagenFile != null && !imagenFile.isEmpty()) {
+                String nombreImagen = storageService.guardarArchivo(imagenFile);
+                paqueteDetalles.setImagenUrl(nombreImagen);
+            } else {
+                // Si no viene archivo, el service mantendrá la URL existente.
+                paqueteDetalles.setImagenUrl(null);
+            }
+
+            // 3. Llamar al servicio
             PaqueteTuristicoResponseDTO paqueteActualizadoDTO = paqueteService.actualizarPaquete(id, paqueteDetalles);
             return ResponseEntity.ok(paqueteActualizadoDTO);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    /**
-     * DELETE /api/paquetes/{id} (Este ya estaba bien)
-     */
+    // --- OTROS MÉTODOS (DELETE y Recomendados) ---
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarPaquete(@PathVariable Integer id) {
         try {
@@ -105,23 +130,14 @@ public class PaqueteTuristicoController {
         }
     }
 
-    /**
-     * (NUEVO)
-     * Endpoint para RF-13: Obtener recomendaciones personalizadas.
-     * PROTEGIDO (Requiere JWT).
-     * Escuchará en: GET http://localhost:8080/api/paquetes/recomendados
-     */
     @GetMapping("/recomendados")
     public ResponseEntity<?> obtenerRecomendaciones(Principal principal) {
-
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado.");
         }
-
         try {
             List<PaqueteTuristicoResponseDTO> recomendaciones = paqueteService.obtenerRecomendaciones(principal);
             return ResponseEntity.ok(recomendaciones);
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

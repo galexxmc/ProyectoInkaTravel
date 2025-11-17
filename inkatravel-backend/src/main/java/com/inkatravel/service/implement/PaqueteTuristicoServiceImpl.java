@@ -5,50 +5,96 @@ import com.inkatravel.model.PaqueteTuristico;
 import com.inkatravel.repository.PaqueteTuristicoRepository;
 import com.inkatravel.service.PaqueteTuristicoService;
 
-import com.inkatravel.dto.PaqueteDetalleResponseDTO; // <-- IMPORTAR
-import com.inkatravel.dto.clima.OpenMeteoResponseDTO; // <-- IMPORTAR
-import com.inkatravel.service.ClimaService; // <-- IMPORTAR
+import com.inkatravel.dto.PaqueteDetalleResponseDTO;
+import com.inkatravel.dto.PaqueteTuristicoRequestDTO; // NUEVO IMPORTE
+import com.inkatravel.dto.clima.OpenMeteoResponseDTO;
+import com.inkatravel.service.ClimaService;
 
 import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.inkatravel.model.EstadoReserva; // <-- IMPORTAR
-import com.inkatravel.model.Reserva; // <-- IMPORTAR
-import com.inkatravel.model.Usuario; // <-- IMPORTAR
-import com.inkatravel.repository.ReservaRepository; // <-- IMPORTAR
-import com.inkatravel.repository.UsuarioRepository; // <-- IMPORTAR
-import java.security.Principal; // <-- IMPORTAR
-import java.util.Collections; // <-- IMPORTAR
-import java.util.Optional; // <-- IMPORTAR
-import java.util.stream.Collectors; // <-- IMPORTAR
+import com.inkatravel.model.EstadoReserva;
+import com.inkatravel.model.Reserva;
+import com.inkatravel.model.Usuario;
+import com.inkatravel.repository.ReservaRepository;
+import com.inkatravel.repository.UsuarioRepository;
+import java.security.Principal;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
 @Service
 public class PaqueteTuristicoServiceImpl implements PaqueteTuristicoService {
 
-    // Inyectamos el repositorio
     private final PaqueteTuristicoRepository paqueteRepository;
     private final ClimaService climaService;
-    private final ReservaRepository reservaRepository; // <-- NUEVA DEPENDENCIA
-    private final UsuarioRepository usuarioRepository; // <-- NUEVA DEPENDENCIA
+    private final ReservaRepository reservaRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public PaqueteTuristicoServiceImpl(PaqueteTuristicoRepository paqueteRepository,
                                        ClimaService climaService,
-                                       ReservaRepository reservaRepository, // <-- INYECTAR
-                                       UsuarioRepository usuarioRepository) { // <-- INYECTAR
+                                       ReservaRepository reservaRepository,
+                                       UsuarioRepository usuarioRepository) {
         this.paqueteRepository = paqueteRepository;
         this.climaService = climaService;
         this.reservaRepository = reservaRepository;
         this.usuarioRepository = usuarioRepository;
     }
 
+    // --- MÉTODO CREAR PAQUETE (Modificado) ---
     @Override
-    public PaqueteTuristicoResponseDTO crearPaquete(PaqueteTuristico paquete) {
+    public PaqueteTuristicoResponseDTO crearPaquete(PaqueteTuristicoRequestDTO paqueteDTO) {
+
+        // 1. Mapeo del DTO a la Entidad
+        PaqueteTuristico paquete = new PaqueteTuristico();
+
+        paquete.setNombre(paqueteDTO.getNombre());
+        paquete.setDescripcion(paqueteDTO.getDescripcion());
+        paquete.setPrecio(paqueteDTO.getPrecio());
+        paquete.setRegion(paqueteDTO.getRegion());
+        paquete.setCategoria(paqueteDTO.getCategoria());
+        paquete.setItinerario(paqueteDTO.getItinerario());
+        paquete.setDisponibilidad(paqueteDTO.isDisponibilidad());
+        paquete.setLatitud(paqueteDTO.getLatitud());
+        paquete.setLongitud(paqueteDTO.getLongitud());
+
+        // Asignación de la URL de la imagen que ya guardó el Controller
+        paquete.setImagenUrl(paqueteDTO.getImagenUrl());
+
+        // 2. Guardar y devolver DTO de Respuesta
         PaqueteTuristico paqueteGuardado = paqueteRepository.save(paquete);
-        // Devuelve el DTO, no la entidad
         return new PaqueteTuristicoResponseDTO(paqueteGuardado);
+    }
+
+    // --- MÉTODO ACTUALIZAR PAQUETE (Modificado) ---
+    @Override
+    public PaqueteTuristicoResponseDTO actualizarPaquete(Integer id, PaqueteTuristicoRequestDTO paqueteDetalles) { // 1. ELIMINAMOS 'throws Exception'
+
+        PaqueteTuristico paqueteExistente = paqueteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paquete no encontrado con ID: " + id)); // 2. CAMBIAMOS 'Exception' a 'RuntimeException'
+
+        // 1. Actualizamos todos los campos
+        paqueteExistente.setNombre(paqueteDetalles.getNombre());
+        paqueteExistente.setDescripcion(paqueteDetalles.getDescripcion());
+        paqueteExistente.setPrecio(paqueteDetalles.getPrecio());
+        paqueteExistente.setRegion(paqueteDetalles.getRegion());
+        paqueteExistente.setCategoria(paqueteDetalles.getCategoria());
+        paqueteExistente.setItinerario(paqueteDetalles.getItinerario());
+        paqueteExistente.setDisponibilidad(paqueteDetalles.isDisponibilidad());
+        paqueteExistente.setLatitud(paqueteDetalles.getLatitud());
+        paqueteExistente.setLongitud(paqueteDetalles.getLongitud());
+
+        // 2. Lógica para la URL de la imagen
+        if (paqueteDetalles.getImagenUrl() != null) {
+            paqueteExistente.setImagenUrl(paqueteDetalles.getImagenUrl());
+        }
+
+        PaqueteTuristico paqueteActualizado = paqueteRepository.save(paqueteExistente);
+
+        return new PaqueteTuristicoResponseDTO(paqueteActualizado);
     }
 
     /**
@@ -98,32 +144,6 @@ public class PaqueteTuristicoServiceImpl implements PaqueteTuristicoService {
 
         // 4. Devolver el DTO contenedor con AMBOS datos
         return new PaqueteDetalleResponseDTO(paqueteDTO, clima);
-    }
-
-    @Override
-    public PaqueteTuristicoResponseDTO actualizarPaquete(Integer id, PaqueteTuristico paqueteDetalles) throws Exception {
-        // 1. Buscamos el paquete que se quiere actualizar
-        PaqueteTuristico paqueteExistente = paqueteRepository.findById(id)
-                .orElseThrow(() -> new Exception("Paquete no encontrado con ID: " + id));
-
-        // 2. Actualizamos los campos del paquete existente con los nuevos detalles
-        paqueteExistente.setNombre(paqueteDetalles.getNombre());
-        paqueteExistente.setDescripcion(paqueteDetalles.getDescripcion());
-        paqueteExistente.setPrecio(paqueteDetalles.getPrecio());
-        paqueteExistente.setRegion(paqueteDetalles.getRegion());
-        paqueteExistente.setCategoria(paqueteDetalles.getCategoria());
-        paqueteExistente.setItinerario(paqueteDetalles.getItinerario());
-        paqueteExistente.setDisponibilidad(paqueteDetalles.isDisponibilidad());
-        paqueteExistente.setFechaInicio(paqueteDetalles.getFechaInicio());
-        paqueteExistente.setFechaFin(paqueteDetalles.getFechaFin());
-
-        paqueteExistente.setLatitud(paqueteDetalles.getLatitud());
-        paqueteExistente.setLongitud(paqueteDetalles.getLongitud());
-
-        PaqueteTuristico paqueteActualizado = paqueteRepository.save(paqueteExistente);
-
-        // 3. Guardamos el paquete actualizado
-        return new PaqueteTuristicoResponseDTO(paqueteActualizado);
     }
 
     @Override
