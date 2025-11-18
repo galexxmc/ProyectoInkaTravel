@@ -68,7 +68,13 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Permite peticiones SÓLO desde tu frontend de Angular
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        // --- ¡CAMBIO CRUCIAL AQUÍ! ---
+        // AÑADIMOS la URL de Vercel y la URL de Render (en caso de que uses subdominios)
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "https://proyecto-inka-travel.vercel.app", // <-- ¡TU FRONTEND!
+                "https://*.vercel.app" // Opcional: para permitir todos los subdominios de Vercel
+        ));
         // Permite los métodos HTTP que usamos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Permite cabeceras importantes (como Authorization para el JWT)
