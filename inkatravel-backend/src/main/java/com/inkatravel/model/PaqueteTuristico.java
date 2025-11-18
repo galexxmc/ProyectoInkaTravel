@@ -23,7 +23,7 @@ public class PaqueteTuristico {
     @Column(nullable = false)
     private String nombre;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class PaqueteTuristico {
     private String region;
     private String categoria;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String itinerario;
 
     private boolean disponibilidad = true;
