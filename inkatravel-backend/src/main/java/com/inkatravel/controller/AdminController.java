@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkatravel.dto.MonthlySaleDTO;
+import java.util.List;
+
 import com.inkatravel.model.Pago; // <-- IMPORTAR
 import com.inkatravel.service.PagoService; // <-- IMPORTAR
 import org.springframework.http.HttpStatus; // <-- IMPORTAR
@@ -18,8 +21,6 @@ import org.springframework.web.bind.annotation.DeleteMapping; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.PutMapping; // <-- IMPORTAR
 import org.springframework.web.bind.annotation.RequestBody; // <-- IMPORTAR
 import java.security.Principal; // <-- IMPORTAR
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin") // URL base para TODO lo de admin
@@ -131,5 +132,26 @@ public class AdminController {
     public ResponseEntity<List<PaqueteTuristicoResponseDTO>> obtenerTodosLosPaquetes() {
         List<PaqueteTuristicoResponseDTO> paquetes = adminService.obtenerTodosLosPaquetes();
         return ResponseEntity.ok(paquetes);
+    }
+
+    /**
+     * (NUEVO) Endpoint para obtener las métricas clave del Dashboard.
+     * PROTEGIDO (Requiere JWT de ADMIN).
+     * Escuchará en: GET http://localhost:8080/api/admin/metrics
+     */
+    @GetMapping("/metrics")
+    public ResponseEntity<DashboardMetricsDTO> getDashboardMetrics() {
+        DashboardMetricsDTO metrics = adminService.getDashboardMetrics();
+        return ResponseEntity.ok(metrics);
+    }
+
+    /**
+     * (NUEVO) Endpoint para el gráfico de "Ventas por Mes".
+     * Escuchará en: GET http://localhost:8080/api/admin/sales/monthly
+     */
+    @GetMapping("/sales/monthly")
+    public ResponseEntity<List<MonthlySaleDTO>> getMonthlySalesData() {
+        List<MonthlySaleDTO> salesData = adminService.getMonthlySalesData();
+        return ResponseEntity.ok(salesData);
     }
 }

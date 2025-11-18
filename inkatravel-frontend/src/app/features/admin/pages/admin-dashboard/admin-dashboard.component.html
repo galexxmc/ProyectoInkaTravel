@@ -1,1 +1,63 @@
-<p>admin-dashboard works!</p>
+<div class="p-6 min-h-screen max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Dashboard de Administración</h1>
+    
+    <div *ngIf="isLoading" class="text-center p-10">
+        <p class="text-lg text-gray-600">Cargando datos del negocio...</p>
+    </div>
+
+    <div *ngIf="!isLoading" class="space-y-8">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-green-500">
+                <p class="text-sm font-medium text-gray-500">Ingreso Total</p>
+                <p class="text-3xl font-extrabold text-gray-900 mt-1">S/ {{ totalVentas | number:'1.2-2' }}</p>
+                <span class="text-sm text-green-500">▲ +3.4% vs Mes Anterior</span>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-blue-500">
+                <p class="text-sm font-medium text-gray-500">Nuevas Reservas (7 días)</p>
+                <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ nuevasReservas }}</p>
+                <span class="text-sm text-blue-500">📈 Ver Reporte Completo</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-yellow-500">
+                <p class="text-sm font-medium text-gray-500">Paquetes Disponibles</p>
+                <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ paquetesActivos }}</p>
+                <span class="text-sm text-yellow-600">🔗 Gestionar Paquetes</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-xl border-l-4 border-indigo-500">
+                <p class="text-sm font-medium text-gray-500">Usuarios Registrados</p>
+                <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ totalUsuarios }}</p>
+                <span class="text-sm text-indigo-500">👥 Ver Listado</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-xl">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Ventas por Mes (Últimos 6 meses)</h2>
+                
+                <div class="h-64">
+                    <canvas baseChart
+                        [data]="barChartData"
+                        [options]="barChartOptions"
+                        [type]="barChartType">
+                    </canvas>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-xl space-y-4">
+                <h2 class="text-xl font-semibold text-gray-800">Accesos Rápidos</h2>
+                <button class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-md text-blue-700 font-medium">
+                    Aprobar Nuevas Reservas Pendientes (4) →
+                </button>
+                <button class="w-full text-left p-3 bg-indigo-50 hover:bg-indigo-100 rounded-md text-indigo-700 font-medium">
+                    Reporte de Usuarios PREMIUM →
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

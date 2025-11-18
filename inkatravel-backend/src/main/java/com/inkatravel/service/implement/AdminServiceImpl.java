@@ -1,9 +1,7 @@
 package com.inkatravel.service.implement;
 
-import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
-import com.inkatravel.dto.ReservaResponseDTO;
-import com.inkatravel.dto.UpdateRoleRequestDTO; // <-- IMPORTAR
-import com.inkatravel.dto.UsuarioResponseDTO;
+import com.inkatravel.dto.*;
+import com.inkatravel.model.EstadoReserva;
 import com.inkatravel.model.Usuario; // <-- IMPORTAR
 import com.inkatravel.repository.PaqueteTuristicoRepository;
 import com.inkatravel.repository.ReservaRepository;
@@ -11,10 +9,15 @@ import com.inkatravel.repository.UsuarioRepository;
 import com.inkatravel.service.AdminService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.inkatravel.dto.MonthlySaleDTO; // <-- ¡NUEVO IMPORTE!
+import java.util.List; // <-- ¡NUEVO IMPORTE!
+
+import java.math.BigDecimal;
 import java.security.Principal; // <-- IMPORTAR
 
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,4 +104,51 @@ public class AdminServiceImpl implements AdminService {
                 .map(PaqueteTuristicoResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * (NUEVO) Obtiene todas las métricas clave para el Dashboard de Administración.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public DashboardMetricsDTO getDashboardMetrics() {
+
+        // 1. Total Ventas (Ingresos) - Usa la solución final con el parámetro Enum
+        BigDecimal totalVentas = reservaRepository.sumTotalConfirmedSales(EstadoReserva.CONFIRMADA);
+        if (totalVentas == null) {
+            totalVentas = BigDecimal.ZERO;
+        }
+
+        // 2. Paquetes Activos (disponibilidad = true)
+        Long paquetesActivos = paqueteRepository.countByDisponibilidadTrue();
+
+        // 3. Nuevas Reservas (Últimos 7 días)
+        LocalDateTime haceSieteDias = LocalDateTime.now().minusDays(7);
+        Long nuevasReservas = reservaRepository.countByFechaReservaAfter(haceSieteDias);
+
+        // 4. Total Usuarios
+        Long totalUsuarios = usuarioRepository.count();
+
+        // Construir y devolver el DTO
+        return DashboardMetricsDTO.builder()
+                .totalVentas(totalVentas)
+                .paquetesActivos(paquetesActivos)
+                .nuevasReservas(nuevasReservas)
+                .totalUsuarios(totalUsuarios)
+                .build();
+    }
+
+    /**
+     * (NUEVO) Implementación para obtener datos del gráfico de ventas.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<MonthlySaleDTO> getMonthlySalesData() {
+        // 1. Definir el rango de fechas (últimos 6 meses)
+        LocalDateTime startDate = LocalDateTime.now().minusMonths(6).withDayOfMonth(1);
+
+        // 2. Llamar al repositorio
+        return reservaRepository.findMonthlySalesAfter(EstadoReserva.CONFIRMADA, startDate);
+    }
+
+
 }

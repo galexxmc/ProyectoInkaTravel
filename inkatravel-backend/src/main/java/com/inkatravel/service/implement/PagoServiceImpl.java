@@ -238,20 +238,15 @@ public class PagoServiceImpl implements PagoService {
         usuarioRepository.save(usuario);
 
         // 5. Enviar Notificación (RF-15)
-        String asunto = "¡Tu reserva en InkaTravel está confirmada!";
-        String texto = String.format(
-                "¡Hola %s!\n\n" +
-                        "Tu pago ha sido confirmado exitosamente.\n" +
-                        "Reserva ID: %d\n" +
-                        "Paquete: %s\n" +
-                        "Total Pagado: S/ %.2f\n\n" +
-                        "¡Gracias por viajar con nosotros!",
+        // --- ¡NUEVA LLAMADA! (DEBES USAR ESTO) ---
+        // Llama al nuevo método de EmailService que usa la plantilla HTML
+        emailService.enviarCorreoConfirmacion(
+                usuario.getCorreo(),
                 usuario.getNombre(),
                 reserva.getId(),
                 paquete.getNombre(),
-                reserva.getTotal()
+                reserva.getTotal() // O pagoGuardado.getMonto()
         );
-        emailService.enviarEmailSimple(usuario.getCorreo(), asunto, texto);
 
         return new PagoResponseDTO(pagoGuardado);
     }

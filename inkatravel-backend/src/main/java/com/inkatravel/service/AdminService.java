@@ -1,16 +1,18 @@
 package com.inkatravel.service;
 
-import com.inkatravel.dto.PaqueteTuristicoResponseDTO;
-import com.inkatravel.dto.ReservaResponseDTO;
-import com.inkatravel.dto.UpdateRoleRequestDTO; // <-- IMPORTAR
-import com.inkatravel.dto.UsuarioResponseDTO;
+import com.inkatravel.dto.*;
+
 import java.security.Principal; // <-- IMPORTAR
 import java.util.List;
+
+import com.inkatravel.dto.MonthlySaleDTO; // <-- ¡NUEVO IMPORTE!
 
 /**
  * Define la lógica de negocio para las operaciones del Administrador (RF-12).
  */
 public interface AdminService {
+
+    DashboardMetricsDTO getDashboardMetrics();
 
     /**
      * (RF-12) Obtiene la lista de TODOS los usuarios registrados.
@@ -46,4 +48,10 @@ public interface AdminService {
     void habilitarUsuario(Integer id) throws Exception;
 
     List<PaqueteTuristicoResponseDTO> obtenerTodosLosPaquetes();
+
+    /**
+     * (NUEVO) Obtiene los datos históricos de ventas para el gráfico.
+     */
+    List<MonthlySaleDTO> getMonthlySalesData(); // <-- ¡AÑADIR ESTO!
+
 }

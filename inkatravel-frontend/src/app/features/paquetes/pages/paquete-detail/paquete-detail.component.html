@@ -32,7 +32,7 @@
 
         <div class="detalle-header p-6 border-b border-gray-200">
             <h1 class="text-4xl font-bold text-gray-900">{{ detalle.paquete.nombre }}</h1>
-            <span class="text-lg text-blue-600 font-semibold">{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span>
+            <span class="text-lg text-blue-900 font-semibold">{{ detalle.paquete.region }} - {{ detalle.paquete.categoria }}</span>
         </div>
 
         <div class="detalle-body grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
@@ -49,11 +49,11 @@
                 
                 <div *ngIf="detalle.clima && detalle.clima.current_weather" 
                      class="clima-widget bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
-                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Clima Actual</h3>
-                    <p class="temperatura text-4xl font-bold text-blue-700">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">Clima Actual</h3>
+                    <p class="temperatura text-4xl font-bold text-blue-900">
                         {{ detalle.clima.current_weather.temperature }} °C
                     </p>
-                    <p class="condicion text-blue-600">
+                    <p class="condicion text-blue-900">
                         <span *ngIf="detalle.clima.current_weather.weathercode === 0">☀️ Despejado</span>
                         <span *ngIf="detalle.clima.current_weather.weathercode > 0">☁️ Nublado/Lluvia</span>
                     </p>

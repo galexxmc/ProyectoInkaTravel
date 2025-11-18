@@ -12,17 +12,9 @@ export const routes: Routes = [
     // Estas rutas no tienen layout principal y son accesibles por todos.
     { path: 'login', component: LoginComponent },
     { path: 'registro', component: RegistroComponent },
-    {
-        path: 'pago-exitoso',
-        loadComponent: () => import('./features/pagos/pages/pago-exitoso/pago-exitoso.component').then(m => m.PagoExitosoComponent)
-    },
-    {
-        path: 'suscripcion-exitosa',
-        loadComponent: () => import('./features/pagos/pages/suscripcion-exitosa/suscripcion-exitosa.component').then(m => m.SuscripcionExitosaComponent)
-    },
+    // (Se eliminaron las rutas de pago duplicadas de aquí)
 
     // --- 2. RUTAS DE ADMIN (Protegidas por adminGuard) ---
-    // (Van ANTES que las rutas de usuario para que se detecten primero)
     {
         path: 'admin',
         component: AdminLayoutComponent, // Usa el Layout de Admin
@@ -72,11 +64,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/home/pages/home/home.component').then(m => m.HomeComponent)
             },
             {
-                path: 'paquetes', // Catálogo PÚBLICO (ya no es admin)
+                path: 'paquetes', // Catálogo
                 loadComponent: () => import('./features/paquetes/pages/paquetes-list/paquetes-list.component').then(m => m.PaquetesListComponent)
             },
             {
-                path: 'paquetes/:id', // Detalle PÚBLICO
+                path: 'paquetes/:id', // Detalle
                 loadComponent: () => import('./features/paquetes/pages/paquete-detail/paquete-detail.component').then(m => m.PaqueteDetailComponent)
             },
             {
@@ -92,11 +84,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/usuario/pages/perfil/perfil.component').then(m => m.PerfilComponent)
             },
             {
-                path: 'pago-exitoso',
+                path: 'pago-exitoso', // <-- Ubicación correcta (dentro del layout)
                 loadComponent: () => import('./features/pagos/pages/pago-exitoso/pago-exitoso.component').then(m => m.PagoExitosoComponent)
             },
             {
-                path: 'suscripcion-exitosa',
+                path: 'suscripcion-exitosa', // <-- Ubicación correcta (dentro del layout)
                 loadComponent: () => import('./features/pagos/pages/suscripcion-exitosa/suscripcion-exitosa.component').then(m => m.SuscripcionExitosaComponent)
             },
             {

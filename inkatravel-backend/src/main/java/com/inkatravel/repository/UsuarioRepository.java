@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByCorreo(String correo);
+    // Retorna el conteo total de usuarios
+    long count();
 }

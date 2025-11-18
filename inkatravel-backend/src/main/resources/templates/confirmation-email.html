@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f4f4; padding: 20px;">
+    <tr>
+        <td align="center">
+
+            <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+                <tr>
+                    <td align="center" style="background-color: #1e3a8a; padding: 20px;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">InkaTravel 🇵🇪</h1>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 40px 30px; color: #333;">
+
+                        <h2 style="font-size: 24px; color: #1e3a8a; margin: 0 0 20px 0;">¡Tu Aventura está Confirmada!</h2>
+
+                        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 25px;">
+                            ¡Hola, <strong th:text="${nombreUsuario}">Gherson Monje</strong>!
+                        </p>
+                        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 25px;">
+                            Tu pago ha sido procesado exitosamente y tu reserva está confirmada. Estamos emocionados de que viajes con nosotros.
+                        </p>
+
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f0f5ff; border-radius: 8px; padding: 20px;">
+                            <tr>
+                                <td style="font-size: 16px; color: #555;">
+                                    <p style="margin: 5px 0;"><strong>Reserva ID:</strong> <span th:text="${reservaId}">3</span></p>
+                                    <p style="margin: 5px 0;"><strong>Paquete:</strong> <span th:text="${paqueteNombre}">Tour Arequipa</span></p>
+                                    <p style="margin: 10px 0; font-size: 18px; color: #1e3a8a;">
+                                        <strong>Total Pagado: S/ </strong>
+                                        <strong th:text="${#numbers.formatDecimal(totalPagado, 1, 'COMMA', 2, 'POINT')}">850.00</strong>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="background-color: #f9f9f9; padding: 20px; font-size: 12px; color: #888; border-top: 1px solid #eee;">
+                        <p style="margin: 5px 0;">&copy; 2025 InkaTravel PE. Todos los derechos reservados.</p>
+                        <p style="margin: 5px 0;">Av. Arequipa 123, Lima, Perú</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

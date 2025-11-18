@@ -51,4 +51,7 @@ public interface PaqueteTuristicoRepository extends JpaRepository<PaqueteTuristi
     List<PaqueteTuristico> findByPrecioBetweenAndDisponibilidad(BigDecimal precioMin, BigDecimal precioMax, boolean disponibilidad);
 
     List<PaqueteTuristico> findTop5ByRegionAndIdNotAndDisponibilidad(String region, Integer id, boolean disponibilidad);
+
+    // Cuenta paquetes donde la disponibilidad es TRUE
+    long countByDisponibilidadTrue();
 }
