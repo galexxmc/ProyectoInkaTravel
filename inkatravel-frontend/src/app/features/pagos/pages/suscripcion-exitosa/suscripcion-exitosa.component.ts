@@ -39,6 +39,6 @@ export class SuscripcionExitosaComponent implements OnInit {
 
   irAlPerfil(): void {
     // Usamos el href para forzar la salida de ngrok (como en pago-exitoso)
-    window.location.href = 'http://localhost:4200/perfil';
+    window.location.href = '/perfil';
   }
 }
