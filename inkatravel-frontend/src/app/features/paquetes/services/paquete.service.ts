@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 // Importa las interfaces DTO que definimos
 import { PaqueteDetalleResponseDTO, PaqueteTuristicoResponseDTO} from '../../../core/interfaces/paquete.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,9 @@ import { PaqueteDetalleResponseDTO, PaqueteTuristicoResponseDTO} from '../../../
 export class PaqueteService {
 
   // URL base de tu API de paquetes en Spring Boot
-  private baseUrl = 'http://localhost:8080/api/paquetes';
+
+  private baseUrl = `${environment.apiUrl}/paquetes`;
+
   
   // Inyecta el HttpClient
   private http = inject(HttpClient);

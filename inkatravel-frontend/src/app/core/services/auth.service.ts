@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 
 import { UsuarioResponseDTO } from '../interfaces/usuario.interface';
 
+import { environment } from '../../../environments/environment';
+
 // (Importante: Necesitarás crear esta interfaz, la usaremos después)
 // import { UsuarioResponseDTO } from '../interfaces/usuario.interface';
 
@@ -13,7 +15,7 @@ import { UsuarioResponseDTO } from '../interfaces/usuario.interface';
 export class AuthService {
 
   // La URL de tu backend (Asegúrate de que tu Spring Boot esté corriendo)
-  private baseUrl = 'http://localhost:8080/api/usuarios';
+  private baseUrl = `${environment.apiUrl}/usuarios`;
 
   constructor(private http: HttpClient) { }
 

@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PuntoFidelidadResponseDTO } from '../../../core/interfaces/puntos.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PuntosService {
 
-  private baseUrl = 'http://localhost:8080/api/puntos';
+  private baseUrl = `${environment.apiUrl}/puntos`;
   private http = inject(HttpClient);
 
   constructor() { }

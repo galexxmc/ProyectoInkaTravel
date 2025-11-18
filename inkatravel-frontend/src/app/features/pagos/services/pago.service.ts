@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 // Interface para la respuesta del link de pago
 interface PagoLinkResponse {
@@ -12,7 +13,7 @@ interface PagoLinkResponse {
 })
 export class PagoService {
 
-  private baseUrl = 'http://localhost:8080/api/pagos';
+  private baseUrl = `${environment.apiUrl}/pagos`;
   private http = inject(HttpClient);
 
   constructor() { }

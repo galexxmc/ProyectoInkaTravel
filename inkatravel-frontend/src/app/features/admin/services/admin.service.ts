@@ -11,12 +11,14 @@ import { ReservaResponseDTO } from '../../../core/interfaces/reserva.interface';
 import { PagoResponseDTO } from '../../../core/interfaces/pago.interface';
 import { PaqueteTuristicoResponseDTO } from '../../../core/interfaces/paquete.interface';
 
+import { environment } from '../../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
 
-  private baseUrl = 'http://localhost:8080/api/admin';
+  private baseUrl = `${environment.apiUrl}/admin`;
   private http = inject(HttpClient);
 
   constructor() { }
