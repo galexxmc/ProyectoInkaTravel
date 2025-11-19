@@ -36,43 +36,38 @@ public class PagoController {
     @PostMapping("/webhook")
     public ResponseEntity<?> recibirWebhook(@RequestBody Map<String, Object> payload) {
 
-        // --- LOG DE DEPURACIÓN (Lo dejamos por si acaso) ---
-        System.out.println("--- WEBHOOK RECIBIDO ---");
+        System.out.println("--- WEBHOOK RECIBIDO (Payload Raw) ---");
         System.out.println(payload);
 
         try {
-            String topic = (String) payload.get("type");
+            // 1. Extraer data
+            Map<String, Object> data = (Map<String, Object>) payload.get("data");
+
+            // 2. Validación simple: ¿Tiene un ID?
+            if (data == null || data.get("id") == null) {
+                // Si no hay ID, es una notificación que no nos sirve (ej: merchant_order sin pago)
+                return ResponseEntity.ok().build();
+            }
+
+            // 3. Obtener el ID del Pago
+            Long paymentId = Long.parseLong(data.get("id").toString());
+            String type = (String) payload.get("type");
             String action = (String) payload.get("action");
 
-            Map<String, Object> data = (Map<String, Object>) payload.get("data");
-            Long paymentId = null;
+            System.out.println("Procesando Payment ID: " + paymentId + " | Action: " + action + " | Type: " + type);
 
-            // --- ¡CAMBIO AQUÍ! ---
-            // Si no hay 'data' o 'data.id', simplemente salimos con 200 OK
-            // para que MP deje de insistir. No registramos un error.
-            if (data == null || data.get("id") == null) {
-                System.out.println("Webhook ignorado (sin data.id): " + topic);
-                return ResponseEntity.ok().build(); // <-- Devolvemos OK
-            }
-            // --- FIN DEL CAMBIO ---
-
-            paymentId = Long.parseLong(data.get("id").toString());
-
-            // Lógica de Webhook para SDK 2.1.7 (payment.created)
-            if (action != null && action.equals("payment.created") && paymentId != null) {
-                pagoService.procesarWebhook(paymentId, "payment");
-            }
-            // Lógica de Webhook para SDK 2.5+ (payment)
-            else if (topic != null && topic.equals("payment") && paymentId != null) {
-                pagoService.procesarWebhook(paymentId, "payment");
-            }
+            // 4. ¡CAMBIO CRUCIAL!
+            // Procesamos SIEMPRE que haya un paymentId.
+            // Eliminamos el filtro estricto de "payment.created".
+            // Esto permite que pasen los eventos "payment.updated" (que traen la aprobación).
+            pagoService.procesarWebhook(paymentId, "payment");
 
             return ResponseEntity.ok().build();
 
         } catch (Exception e) {
-            System.err.println("¡ERROR FATAL EN WEBHOOK! " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+            System.err.println("Error procesando webhook: " + e.getMessage());
+            // Respondemos OK para que Mercado Pago no siga reintentando si es un error nuestro de lógica
+            return ResponseEntity.ok().build();
         }
     }
 
