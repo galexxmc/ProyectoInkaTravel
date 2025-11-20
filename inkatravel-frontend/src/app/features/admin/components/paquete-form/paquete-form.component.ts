@@ -51,8 +51,8 @@ export class PaqueteFormComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-    // 1. Inicializar el formulario (Se mantiene igual)
+ngOnInit(): void {
+    // 1. Inicializar el formulario
     this.paqueteForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
@@ -67,18 +67,20 @@ export class PaqueteFormComponent implements OnInit {
       fechaFin: [null]
     });
 
-    // 2. Lógica de Carga de Datos (Modificamos esta sección)
+    // 2. Lógica de Carga de Datos
     if (this.isEditMode && this.paqueteId) {
       this.paqueteService.obtenerDetallePaquete(this.paqueteId).subscribe({
         next: (data) => {
           this.paqueteForm.patchValue(data.paquete); 
           
-          // --- NUEVA LÍNEA: Guardar la URL de la imagen actual ---
+          // --- CORRECCIÓN AQUÍ ---
           if (data.paquete.imagenUrl) {
-            // Asumimos que el backend sirve la imagen en /uploads/
-            this.currentImageUrl = `http://localhost:8080/uploads/${data.paquete.imagenUrl}`;
+            // Si usas Cloudinary, la URL ya viene completa (https://...).
+            // Si no, y es local, deberías usar environment.apiUrl en lugar de escribirlo a mano.
+            // Asumiendo Cloudinary:
+            this.currentImageUrl = data.paquete.imagenUrl;
           }
-          // --------------------------------------------------------
+          // -----------------------
           
           this.isPageLoading = false;
         },
