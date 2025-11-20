@@ -25,7 +25,7 @@
         <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden">
             
             <img *ngIf="paquete.imagenUrl" 
-                [src]="'http://localhost:8080/uploads/' + paquete.imagenUrl" 
+                [src]="paquete.imagenUrl"
                 alt="{{ paquete.nombre }}"
                 class="w-full h-full object-cover">
             
