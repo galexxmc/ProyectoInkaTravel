@@ -1,13 +1,8 @@
 <div class="detalle-container max-w-6xl mx-auto my-25">
 
-    <div *ngIf="isLoading" 
-        class="fixed inset-0 z-50 flex items-center justify-center ">
-
+    <div *ngIf="isLoading" class="fixed inset-0 z-50 flex items-center justify-center bg-white/80">
         <div class="flex flex-col items-center p-8 rounded-lg"> 
-
-            <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" 
-                class="loading-sol-inca w-24 h-24 mb-4">
-
+            <img src="assets/images/sol-inka.png" alt="Cargando Sol Inca" class="loading-sol-inca w-24 h-24 mb-4">
             <p class="text-gray-800 text-2xl font-semibold">Cargando detalle...</p>
         </div>
     </div>
@@ -18,17 +13,16 @@
 
     <div *ngIf="detalle && !isLoading" class="detalle-content bg-white shadow-lg rounded-lg overflow-hidden">
         
-    <div class="h-64 bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden">
-        
-        <img *ngIf="detalle.paquete.imagenUrl" 
-            [src]="detalle.paquete.imagenUrl"
-            alt="{{ detalle.paquete.nombre }}"
-            class="w-full h-full object-cover">
-        
-        <div *ngIf="!detalle.paquete.imagenUrl" class="text-xl p-4 text-center">
-                    <p class="mt-2 text-base">Imagen Principal No Disponible</p>
+        <div class="h-64 bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden">
+            <img *ngIf="detalle.paquete.imagenUrl" 
+                 [src]="detalle.paquete.imagenUrl"
+                 alt="{{ detalle.paquete.nombre }}"
+                 class="w-full h-full object-cover">
+            
+            <div *ngIf="!detalle.paquete.imagenUrl" class="text-xl p-4 text-center">
+                <p class="mt-2 text-base">Imagen Principal No Disponible</p>
+            </div>
         </div>
-    </div>
 
         <div class="detalle-header p-6 border-b border-gray-200">
             <h1 class="text-4xl font-bold text-gray-900">{{ detalle.paquete.nombre }}</h1>
@@ -68,17 +62,15 @@
                         <div class="mb-3">
                             <label for="cantidadViajeros" class="block text-sm font-medium text-gray-700 mb-1">Viajeros:</label>
                             <input id="cantidadViajeros" type="number" formControlName="cantidadViajeros" min="1"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-                                          focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
             
                         <div class="mb-4">
                             <label for="puntosAUsar" class="block text-sm font-medium text-gray-700 mb-1">
-                                Canjear Puntos (Disponibles: {{ usuarioActual?.puntosAcumulados }})
+                                Canjear Puntos (Disponibles: {{ usuarioActual?.puntosAcumulados || 0 }})
                             </label>
                             <input id="puntosAUsar" type="number" formControlName="puntosAUsar" min="0"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-                                          focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         
                         <div *ngIf="reservaForm.get('puntosAUsar')?.hasError('puntosInsuficientes')" class="text-red-500 text-sm mb-2">
@@ -99,9 +91,7 @@
                         </div>
             
                         <button type="submit" [disabled]="reservaForm.invalid" 
-                                class="w-full bg-green-600 text-white py-3 px-4 rounded-md font-semibold mt-4
-                                       hover:bg-green-700 transition duration-300
-                                       disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="w-full bg-green-600 text-white py-3 px-4 rounded-md font-semibold mt-4 hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             Reservar y Pagar S/ {{ totalNeto | number:'1.2-2' }}
                         </button>
                     </form>
@@ -111,6 +101,45 @@
 
         <div class="p-6 border-t border-gray-200">
             <a routerLink="/paquetes" class="text-blue-600 hover:text-blue-800">← Volver al Catálogo</a>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showLoginModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4">
+    
+    <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+        
+        <button (click)="cerrarModal()" type="button" class="absolute top-4 right-4 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-lg w-8 h-8 inline-flex justify-center items-center">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+        </button>
+        
+        <div class="p-8 text-center">
+            <div class="mx-auto mb-6 text-yellow-500 bg-yellow-100 w-20 h-20 rounded-full flex items-center justify-center shadow-sm">
+                <svg class="w-10 h-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+            </div>
+
+            <h3 class="mb-3 text-2xl font-bold text-gray-900">¡Inicia Sesión para Viajar!</h3>
+            <p class="mb-8 text-gray-500">
+                Para completar tu reserva, acumular puntos y asegurar tu lugar, necesitas acceder a tu cuenta de InkaTravel.
+            </p>
+            
+            <div class="flex flex-col space-y-3">
+                <button (click)="irALogin()" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-xl text-lg px-5 py-3 text-center transition duration-200 shadow-lg">
+                    Iniciar Sesión
+                </button>
+                
+                <button (click)="irARegistro()" class="text-blue-900 bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-200 font-bold rounded-xl text-lg px-5 py-3 text-center transition duration-200 shadow-md">
+                    ¿Nuevo aquí? Crear Cuenta
+                </button>
+
+                <button (click)="cerrarModal()" class="text-gray-500 bg-transparent hover:bg-gray-50 font-medium rounded-xl text-sm px-5 py-2.5 mt-2 transition duration-200">
+                    Cancelar
+                </button>
+            </div>
         </div>
     </div>
 </div>
