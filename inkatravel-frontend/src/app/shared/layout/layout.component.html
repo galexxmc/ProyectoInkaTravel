@@ -1,72 +1,65 @@
-<div class="flex flex-col min-h-screen">
+<header class="w-full bg-blue-900 border-b border-gray-200 py-3 fixed top-0 left-0 z-50">
+    <div class="max-w-7xl mx-auto relative h-10 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        
+        <a routerLink="/home" class="flex items-center text-xl font-bold text-white z-20 hover:text-yellow-400 transition">
+            InkaTravel PE 🇵🇪
+        </a>
 
-    <header class="w-full bg-blue-900 border-b border-gray-200 py-3 fixed top-0 left-0 z-50">
-        <div class="max-w-7xl mx-auto relative h-10 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-full shadow-md p-1 flex space-x-1 
+                    absolute left-1/2 transform -translate-x-1/2 z-10">
             
-            <a routerLink="/home" class="flex items-center text-xl font-bold text-white z-20 hover:text-yellow-400 transition">
-                InkaTravel PE 🇵🇪
+            <a routerLink="/paquetes" 
+               class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
+                Catálogo
             </a>
-
-            <div class="bg-white rounded-full shadow-md p-1 flex space-x-1 
-                        absolute left-1/2 transform -translate-x-1/2 z-10">
-                
-                <a routerLink="/paquetes" 
+            
+            <ng-container *ngIf="estaLogueado()">
+                <a routerLink="/mis-reservas" 
                    class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
-                    Catálogo
+                    Mis Reservas
                 </a>
-                
-                <ng-container *ngIf="estaLogueado()">
-                    <a routerLink="/mis-reservas" 
-                       class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
-                        Mis Reservas
-                    </a>
-                    <a routerLink="/mis-puntos" 
-                       class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
-                        Puntos
-                    </a>
-                    <a routerLink="/perfil" 
-                       class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
-                        Perfil
-                    </a>
-                    <a routerLink="/admin" *ngIf="isAdmin"
-                       class="px-4 py-2 text-yellow-600 font-bold rounded-full transition duration-200 hover:bg-blue-50">
-                        Admin
-                    </a>
-                </ng-container>
-            </div>
-            
-            <div class="flex items-center space-x-3 z-20">
-
-                <button *ngIf="estaLogueado()" (click)="logout()" 
-                        class="bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition duration-300 shadow-lg">
-                    Cerrar Sesión
-                </button>
-
-                <ng-container *ngIf="!estaLogueado()">
-                    <a routerLink="/login" 
-                       class="text-white font-medium px-4 py-2 rounded-md hover:bg-blue-800 transition duration-300 border border-blue-400/50">
-                        Iniciar Sesión
-                    </a>
-                    <a routerLink="/registro" 
-                       class="bg-yellow-500 text-blue-900 px-5 py-2 rounded-md font-bold shadow-lg hover:bg-yellow-400 transition duration-300 transform hover:scale-105">
-                        Crear Cuenta
-                    </a>
-                </ng-container>
-
-            </div>
-            
+                <a routerLink="/mis-puntos" 
+                   class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
+                    Puntos
+                </a>
+                <a routerLink="/perfil" 
+                   class="px-4 py-2 text-blue-900 font-medium rounded-full transition duration-200 hover:bg-blue-50 hover:text-blue-600">
+                    Perfil
+                </a>
+                <a routerLink="/admin" *ngIf="isAdmin"
+                   class="px-4 py-2 text-yellow-600 font-bold rounded-full transition duration-200 hover:bg-blue-50">
+                    Admin
+                </a>
+            </ng-container>
         </div>
-    </header>
+        
+        <div class="flex items-center space-x-3 z-20">
 
-    <main class="flex-grow pt-20 bg-gray-50">
-        <router-outlet></router-outlet>
-    </main>
+            <button *ngIf="estaLogueado()" (click)="logout()" 
+                    class="bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition duration-300 shadow-lg">
+                Cerrar Sesión
+            </button>
 
-    <footer class="bg-blue-900 text-gray-100 text-center p-6 mt-auto border-t-4 border-yellow-500">
-        <div class="max-w-7xl mx-auto">
-            <p class="text-lg font-semibold">&copy; 2025 InkaTravel PE</p>
-            <p class="text-sm text-blue-200 mt-1">Todos los derechos reservados.</p>
+            <ng-container *ngIf="!estaLogueado()">
+                <a routerLink="/login" 
+                   class="text-white font-medium px-4 py-2 rounded-md hover:bg-blue-800 transition duration-300 border border-blue-400">
+                    Iniciar Sesión
+                </a>
+                <a routerLink="/registro" 
+                   class="bg-yellow-500 text-blue-900 px-5 py-2 rounded-md font-bold shadow-lg hover:bg-yellow-400 transition duration-300 transform hover:scale-105">
+                    Crear Cuenta
+                </a>
+            </ng-container>
+
         </div>
-    </footer>
+        
+    </div>
+</header>
 
-</div>
+<main class="app-main container mx-auto p-6 flex-grow">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="bg-blue-900 text-gray-100 text-center p-6">
+  <p>&copy; 2025 InkaTravel - Todos los derechos reservados.</p>
+</footer>
