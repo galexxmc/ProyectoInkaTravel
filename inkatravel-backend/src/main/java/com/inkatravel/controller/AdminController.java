@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.inkatravel.dto.MonthlySaleDTO;
 import java.util.List;
 
-import com.inkatravel.model.Pago; // <-- IMPORTAR
-import com.inkatravel.service.PagoService; // <-- IMPORTAR
-import org.springframework.http.HttpStatus; // <-- IMPORTAR
-import org.springframework.web.bind.annotation.PathVariable; // <-- IMPORTAR
-import org.springframework.web.bind.annotation.PostMapping; // <-- IMPORTAR
+import com.inkatravel.model.Pago;
+import com.inkatravel.service.PagoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import org.springframework.web.bind.annotation.DeleteMapping; // <-- IMPORTAR
-import org.springframework.web.bind.annotation.PutMapping; // <-- IMPORTAR
-import org.springframework.web.bind.annotation.RequestBody; // <-- IMPORTAR
-import java.security.Principal; // <-- IMPORTAR
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/admin") // URL base para TODO lo de admin
+@RequestMapping("/api/admin")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
@@ -35,58 +35,33 @@ public class AdminController {
         this.pagoService = pagoService;
     }
 
-    /**
-     * Endpoint para RF-12: Ver todos los usuarios.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: GET http://localhost:8080/api/admin/usuarios
-     */
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioResponseDTO>> obtenerTodosLosUsuarios() {
         List<UsuarioResponseDTO> usuarios = adminService.obtenerTodosLosUsuarios();
         return ResponseEntity.ok(usuarios);
     }
 
-    /**
-     * Endpoint para RF-12: Ver todas las reservas.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: GET http://localhost:8080/api/admin/reservas
-     */
     @GetMapping("/reservas")
     public ResponseEntity<List<ReservaResponseDTO>> obtenerTodasLasReservas() {
         List<ReservaResponseDTO> reservas = adminService.obtenerTodasLasReservas();
         return ResponseEntity.ok(reservas);
     }
 
-    /**
-     * (NUEVO) Endpoint para RF-09/10/07: Confirmación Manual de Pago.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: POST http://localhost:8080/api/admin/reservas/5/confirmar
-     */
     @PostMapping("/reservas/{id}/confirmar")
     public ResponseEntity<?> confirmarPago(@PathVariable("id") Integer reservaId) {
         try {
-            // Esta variable ahora es de tipo DTO
             PagoResponseDTO pagoConfirmadoDTO = pagoService.confirmarPagoAdmin(reservaId, "Yape/Plin (Admin)");
-
-            // Devolvemos el DTO (que es seguro)
             return ResponseEntity.ok(pagoConfirmadoDTO);
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    /**
-     * (NUEVO) Endpoint para RF-12: Actualizar rol de usuario.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: PUT http://localhost:8080/api/admin/usuarios/5/rol
-     */
     @PutMapping("/usuarios/{id}/rol")
     public ResponseEntity<?> actualizarRol(
             @PathVariable Integer id,
             @RequestBody UpdateRoleRequestDTO dto,
             Principal principal) {
-
         try {
             UsuarioResponseDTO usuarioActualizado = adminService.actualizarRolUsuario(id, dto, principal);
             return ResponseEntity.ok(usuarioActualizado);
@@ -95,11 +70,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * (NUEVO) Endpoint para RF-12: Desactivar (banear) usuario.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: DELETE http://localhost:8080/api/admin/usuarios/5
-     */
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> desactivarUsuario(@PathVariable Integer id) {
         try {
@@ -110,11 +80,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * (NUEVO) Endpoint para RF-12: Habilitar (reactivar) usuario.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: PUT http://localhost:8080/api/admin/usuarios/5/habilitar
-     */
     @PutMapping("/usuarios/{id}/habilitar")
     public ResponseEntity<?> habilitarUsuario(@PathVariable Integer id) {
         try {
@@ -125,33 +90,30 @@ public class AdminController {
         }
     }
 
-    /**
-     * (NUEVO) Endpoint para RF-12: Ver todos los paquetes (activos e inactivos).
-     */
     @GetMapping("/paquetes")
     public ResponseEntity<List<PaqueteTuristicoResponseDTO>> obtenerTodosLosPaquetes() {
         List<PaqueteTuristicoResponseDTO> paquetes = adminService.obtenerTodosLosPaquetes();
         return ResponseEntity.ok(paquetes);
     }
 
-    /**
-     * (NUEVO) Endpoint para obtener las métricas clave del Dashboard.
-     * PROTEGIDO (Requiere JWT de ADMIN).
-     * Escuchará en: GET http://localhost:8080/api/admin/metrics
-     */
     @GetMapping("/metrics")
     public ResponseEntity<DashboardMetricsDTO> getDashboardMetrics() {
         DashboardMetricsDTO metrics = adminService.getDashboardMetrics();
         return ResponseEntity.ok(metrics);
     }
 
-    /**
-     * (NUEVO) Endpoint para el gráfico de "Ventas por Mes".
-     * Escuchará en: GET http://localhost:8080/api/admin/sales/monthly
-     */
     @GetMapping("/sales/monthly")
     public ResponseEntity<List<MonthlySaleDTO>> getMonthlySalesData() {
         List<MonthlySaleDTO> salesData = adminService.getMonthlySalesData();
         return ResponseEntity.ok(salesData);
+    }
+
+    // ================================================================
+    // --- ¡NUEVO! Endpoint "Ping" para evitar que Render se duerma ---
+    // URL: https://tubackend.onrender.com/api/admin/ping
+    // ================================================================
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("Pong!");
     }
 }

@@ -105,6 +105,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/paquetes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/paquetes/{id}").permitAll()
+                        .requestMatchers("/api/admin/ping").permitAll()
                         .requestMatchers("/api/pagos/webhook").permitAll()
                         .requestMatchers("/api/pagos/webhook-suscripcion").permitAll()
 
@@ -122,6 +123,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/paquetes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/paquetes/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
 
                         // --- Reglas de Usuario Logueado ---
                         .anyRequest().authenticated()
